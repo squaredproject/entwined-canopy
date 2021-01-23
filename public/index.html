@@ -1,13 +1,21 @@
 <html>
 
 <head>
-  <title>Express</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Entwined Canopy</title>
   <link rel="stylesheet" href="/stylesheets/style.css">
+  <link rel="icon" href="/favicon.ico">
 </head>
 
 <body>
-  <h1>Express</h1>
-  <p>Welcome to Express</p>
+  <h1>Entwined Canopy</h1>
+  <p>Welcome to Entwined Canopy</p>
+  <noscript>
+    <strong>We're sorry but Entwined Canopy doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+  </noscript>
+  <div id="app"></div>
   <script src="/socket.io/socket.io.js"></script>
   <script>
       var socket = io();
@@ -16,6 +24,7 @@
         socket.emit('test message');
       });
   </script>
+  <!-- built files will be auto injected -->
 </body>
 
 </html>
