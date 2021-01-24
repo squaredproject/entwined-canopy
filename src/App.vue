@@ -4,15 +4,14 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script>
 import ShrubControlPanel from './components/ShrubControlPanel.vue';
 
 export default {
   name: 'App',
   components: {
     ShrubControlPanel,
-  }
+  },
 };
 </script>
 
