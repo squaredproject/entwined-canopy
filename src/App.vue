@@ -1,19 +1,8 @@
 <template>
   <div id="app">
-    <ShrubControlPanel msg="Welcome to Your Vue.js + TypeScript App"/>
+    <router-view/>
   </div>
 </template>
-
-<script>
-import ShrubControlPanel from './components/ShrubControlPanel.vue';
-
-export default {
-  name: 'App',
-  components: {
-    ShrubControlPanel,
-  },
-};
-</script>
 
 <style>
 #app {

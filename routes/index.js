@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+/* GET shrub control pages */
+router.get('/shrubs/:shrubId', function(req, res, next) {
+  res.sendFile('index.html', { root: 'dist' });
 });
 
 module.exports = router;

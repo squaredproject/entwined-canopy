@@ -38,6 +38,7 @@ import _ from 'underscore';
 let makeSettingUpdateFunction = function(key) {
   return _.throttle(function(newValue) {
     this.$socket.client.emit('updateShrubSetting', {
+      shrubId: this.shrubId,
       key: key,
       value: newValue
     });
@@ -46,9 +47,7 @@ let makeSettingUpdateFunction = function(key) {
 
 export default {
   name: 'ShrubControlPanel',
-  props: {
-    msg: String,
-  },
+  props: ['shrubId'],
   data() {
     return {
       hue: 50,
@@ -65,7 +64,10 @@ export default {
   },
   methods: {
     runOneShotTriggerable: function(triggerableName) {
-      this.$socket.client.emit('runOneShotTriggerable', triggerableName);
+      this.$socket.client.emit('runOneShotTriggerable', {
+        shrubId: this.shrubId,
+        triggerableName: triggerableName
+      });
     }
   },
 };
