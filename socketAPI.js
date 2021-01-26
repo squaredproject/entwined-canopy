@@ -21,6 +21,8 @@ function shrubIdIsValid(shrubId) {
   return true;
 };
 
+// TODO: Socket.IO namespaces would be a cleaner way to do this, but
+// had trouble getting them working on the client-side with our Vue/Socket lib
 io.on('connection', (socket) => {
   console.log('A user connected');
 
