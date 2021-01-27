@@ -1,10 +1,11 @@
-const io = require('socket.io')({ wsEngine: 'ws' });
+const io = require('socket.io')();
 const socketAPI = {
   io,
 };
 const config = require('./config');
 
 const validShrubIDs = require('./entwinedShrubs').map(function(shrubConfig) { return String(shrubConfig.id); });
+let getShrubByID = require('./shrub-sessions').getShrubByID;
 
 function shrubIdIsValid(shrubId) {
   return validShrubIDs.includes(shrubId);
@@ -15,9 +16,25 @@ function shrubIdIsValid(shrubId) {
 io.on('connection', (socket) => {
   console.log('A user connected');
 
+  // lifecycle methods
+
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
+
+  // shrub session management
+  socket.on('activateSession', (shrubId) => {
+    let shrub = getShrubByID(shrubId);
+
+    if (!shrub) {
+      console.log(`Can't activate session for unknown shrub ${shrubId}.`);
+      return;
+    }
+
+    shrub.requestActivateSession(socket);
+  });
+
+  // shrub interactivity controls
 
   socket.on('updateShrubSetting', (updateObj) => {
     if (!shrubIdIsValid(updateObj.shrubId)) {

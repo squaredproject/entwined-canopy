@@ -33,6 +33,7 @@
 </template>
 
 <script>
+// TODO: break this file into a bunch of smaller components
 import _ from 'underscore';
 
 let makeSettingUpdateFunction = function(key) {
