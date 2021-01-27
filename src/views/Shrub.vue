@@ -8,20 +8,13 @@
 import md5 from 'md5';
 import ShrubControlPanel from '../components/ShrubControlPanel.vue';
 import config from '../../config.js';
-
+const validShrubIDs = require('../../entwinedShrubs').map(function(shrubConfig) { return String(shrubConfig.id); });
 function checkURLValidity(route) {
   let shrubId = route.params.shrubId;
   let accessKey = route.query.key;
 
-  let shrubIdInt = parseInt(shrubId, 10);
-  if (isNaN(shrubIdInt)) {
-    console.log(`Shrub ID ${shrubId} is not a valid number.`);
-    return false;
-  } else if (shrubIdInt < 0 || shrubIdInt > config.numShrubs - 1) {
+  if (!validShrubIDs.includes(shrubId)) {
     console.log(`Shrub ID ${shrubId} is not a valid shrub.`);
-    return false;
-  } else if (shrubIdInt.toString() != shrubId) {
-    console.log(`Shrub ID ${shrubId} is not properly formatted.`);
     return false;
   }
 

@@ -4,21 +4,10 @@ const socketAPI = {
 };
 const config = require('./config');
 
+const validShrubIDs = require('./entwinedShrubs').map(function(shrubConfig) { return String(shrubConfig.id); });
+
 function shrubIdIsValid(shrubId) {
-  if (typeof shrubId != 'number') {
-    shrubId = parseInt(shrubId, 10);
-  }
-
-  if (isNaN(shrubId)) {
-    return false;
-  } else if (shrubId < 0 || shrubId > config.numShrubs - 1) {
-    return false;
-  } else if (shrubId.toString() != shrubId) {
-    console.log(`Shrub ID ${shrubId} is not properly formatted.`);
-    return false;
-  }
-
-  return true;
+  return validShrubIDs.includes(shrubId);
 };
 
 // TODO: Socket.IO namespaces would be a cleaner way to do this, but
