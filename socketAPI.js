@@ -31,10 +31,53 @@ io.on('connection', (socket) => {
       return;
     }
 
+    console.log(`Activating session ${socket.request.session.id} for shrub ${shrubId}.`);
+
     shrub.requestActivateSession(socket);
   });
 
+  socket.on('deactivateSession', (shrubId) => {
+    let shrub = getShrubByID(shrubId);
+
+    if (!shrub) {
+      console.log(`Can't activate session for unknown shrub ${shrubId}.`);
+      return;
+    }
+
+    console.log(`Deactivating session ${socket.request.session.id} for shrub ${shrubId}.`);
+
+    shrub.deactivateSession(socket);
+  });
+
+  socket.on('acceptOfferedSession', (shrubId) => {
+    let shrub = getShrubByID(shrubId);
+
+    if (!shrub) {
+      console.log(`Can't accept offered session for unknown shrub ${shrubId}.`);
+      return;
+    }
+
+    console.log(`Accepting offered session ${socket.request.session.id} for shrub ${shrubId}.`);
+
+    shrub.acceptOfferedSession(socket);
+  });
+
+  socket.on('declineOfferedSession', (shrubId) => {
+    let shrub = getShrubByID(shrubId);
+
+    if (!shrub) {
+      console.log(`Can't decline offered session for unknown shrub ${shrubId}.`);
+      return;
+    }
+
+    console.log(`Declining offered session ${socket.request.session.id} for shrub ${shrubId}.`);
+
+    shrub.declineOfferedSession(socket);
+  });
+
   // shrub interactivity controls
+
+  // TODO: make sure only the active session can call these methods (i.e. the sessions in the waiting queue can't take control)
 
   socket.on('updateShrubSetting', (updateObj) => {
     if (!shrubIdIsValid(updateObj.shrubId)) {

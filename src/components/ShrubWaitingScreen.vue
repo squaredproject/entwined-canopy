@@ -7,10 +7,9 @@
 </template>
 
 <script>
-// TODO: break this file into a bunch of smaller components
 export default {
   name: 'ShrubWaitingScreen',
-  props: ['shrubId', 'state', 'estimatedWaitTime'],
+  props: ['shrubId', 'estimatedWaitTime'],
   computed: {
     estimatedWaitString: function() {
       if (!this.estimatedWaitTime) {

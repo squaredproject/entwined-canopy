@@ -1,7 +1,8 @@
 <template>
   <div class="shrub">
     <ShrubControlPanel :shrubId="shrubId" v-if="state === 'active'"/>
-    <ShrubWaitingScreen :shrubId="shrubId" :state="state" :estimatedWaitTime="estimatedWaitTime" v-if="state === 'waiting' || state === 'offered'"/>
+    <ShrubWaitingScreen :shrubId="shrubId" :estimatedWaitTime="estimatedWaitTime" v-if="state === 'waiting'"/>
+    <ShrubOfferScreen :shrubId="shrubId" :offerExpiryDate="offerExpiryDate" v-if="state === 'offered'"/>
     <p v-if="state === 'loading'">Loading shrub interactivity...</p>
   </div>
 </template>
@@ -10,7 +11,9 @@
 import md5 from 'md5';
 import ShrubControlPanel from '../components/ShrubControlPanel.vue';
 import ShrubWaitingScreen from '../components/ShrubWaitingScreen.vue';
+import ShrubOfferScreen from '../components/ShrubOfferScreen.vue';
 import config from '../../config.js';
+
 const validShrubIDs = require('../../entwinedShrubs').map(function(shrubConfig) { return String(shrubConfig.id); });
 function checkURLValidity(route) {
   let shrubId = route.params.shrubId;
@@ -37,6 +40,7 @@ export default {
     return {
       state: 'loading',
       estimatedWaitTime: 0,
+      offerExpiryDate: null
     };
   },
   sockets: {
@@ -44,10 +48,22 @@ export default {
       console.log('Shrub.vue socket connected');
     },
     sessionActivated(shrubId) {
-      if (shrubId !== this.shrubId) return;
+      if (shrubId !== this.shrubId) {
+        console.log(`Unexpected event for shrub ${shrubId} (shrub ${this.shrubId} is loaded).`);
+        return;
+      }
 
       this.state = 'active';
       console.log('Shrub.vue session activated');
+    },
+    sessionDeactivated(shrubId) {
+      if (shrubId !== this.shrubId) {
+        console.log(`Unexpected event for shrub ${shrubId} (shrub ${this.shrubId} is loaded).`);
+        return;
+      }
+
+      this.state = 'loading';
+      console.log('Shrub.vue session deactivated');
     },
     sessionWaiting(data) {
       if (data.shrubId !== this.shrubId) {
@@ -59,22 +75,25 @@ export default {
       this.estimatedWaitTime = data.estimatedWaitTime;
       console.log('Shrub.vue session waiting, est wait ' + this.estimatedWaitTime);
     },
-    sessionOffered(shrubId) {
-      if (shrubId !== this.shrubId) {
+    sessionOffered(data) {
+      if (data.shrubId !== this.shrubId) {
         console.log(`Unexpected event for shrub ${data.shrubId} (shrub ${this.shrubId} is loaded).`);
         return;
       }
 
       this.state = 'offered';
+      this.offerExpiryDate = new Date(data.offerExpiryDate);
+
       console.log('Shrub.vue session offered');
     },
     sessionOfferRevoked(shrubId) {
       if (shrubId !== this.shrubId) {
-        console.log(`Unexpected event for shrub ${data.shrubId} (shrub ${this.shrubId} is loaded).`);
+        console.log(`Unexpected event for shrub ${shrubId} (shrub ${this.shrubId} is loaded).`);
         return;
       }
 
-      this.state = 'waiting';
+      this.state = 'loading';
+      this.$router.push('/');
       console.log('Shrub.vue session offer revoked');
     },
   },
@@ -91,6 +110,7 @@ export default {
   components: {
     ShrubControlPanel,
     ShrubWaitingScreen,
+    ShrubOfferScreen,
   },
 };
 </script>

@@ -29,6 +29,9 @@
     <div>
       <span>{{ $socket.connected ? 'Connected' : 'Disconnected' }}</span>
     </div>
+    <div>
+      <a href="#" v-on:click="stopControlling">Stop Controlling</a>
+    </div>
   </div>
 </template>
 
@@ -69,6 +72,11 @@ export default {
         shrubId: this.shrubId,
         triggerableName: triggerableName
       });
+    },
+    stopControlling: function() {
+      this.$socket.client.emit('deactivateSession', this.shrubId);
+      // TODO: should this happen now, or only after the server confirms?
+      this.$router.push('/');
     }
   },
 };
