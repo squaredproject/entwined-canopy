@@ -2,9 +2,9 @@ const io = require('socket.io')();
 const socketAPI = {
   io,
 };
-const config = require('./config');
+const config = require('../config');
 
-const validShrubIDs = require('./entwinedShrubs').map(function(shrubConfig) { return String(shrubConfig.id); });
+const validShrubIDs = require('../entwinedShrubs').map(function(shrubConfig) { return String(shrubConfig.id); });
 let getShrubByID = require('./shrub-sessions').getShrubByID;
 
 function shrubIdIsValid(shrubId) {

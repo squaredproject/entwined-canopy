@@ -7,8 +7,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "start": "node ./bin/www",
-    "start-dev": "nodemon ./bin/www",
+    "start": "node ./server/bin/www",
+    "start-dev": "nodemon ./server/bin/www",
     "dev": "concurrently --kill-others \"yarn build --watch\" \"yarn start-dev\""
   },
   "dependencies": {
