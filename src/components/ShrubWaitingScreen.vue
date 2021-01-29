@@ -13,11 +13,18 @@ export default {
   computed: {
     estimatedWaitString: function() {
       if (!this.estimatedWaitTime) {
-        return '';
+        return 'unknown';
       }
 
-      // borrowed from this StackOverflow answer https://stackoverflow.com/a/25279399
-      return new Date(1000 * this.estimatedWaitTime).toISOString().substr(14, 5);
+      if (this.estimatedWaitTime < 30) {
+        return 'less than a minute';
+      }
+
+      if (this.estimatedWaitTime < 90) {
+        return 'one minute';
+      }
+
+      return `${Math.round(this.estimatedWaitTime / 60.0)} minutes`;
     }
   }
 };

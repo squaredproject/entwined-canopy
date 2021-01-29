@@ -95,10 +95,19 @@ export default {
         return;
       }
 
-      this.state = 'loading';
-      this.$router.push('/');
+      this.state = 'waiting';
       console.log('Shrub.vue session offer revoked');
     },
+    waitTimeUpdated(data) {
+      if (data.shrubId !== this.shrubId) {
+        console.log(`Unexpected event for shrub ${data.shrubId} (shrub ${this.shrubId} is loaded).`);
+        return;
+      }
+
+      this.state = 'waiting';
+      this.estimatedWaitTime = data.estimatedWaitTime;
+      console.log('Shrub.vue wait time updated to ' + this.estimatedWaitTime);
+    }
   },
   beforeRouteEnter(to, from, next) {
     if (!checkURLValidity(to)) {

@@ -1,7 +1,7 @@
 const shrubs = require('../entwinedShrubs');
 
-const OFFER_EXPIRATION_PERIOD_SECS = 5.0;
-const ACTIVE_SESSION_EXPIRATION_PERIOD_SECS = 15.0;
+const OFFER_EXPIRATION_PERIOD_SECS = 15.0;
+const ACTIVE_SESSION_EXPIRATION_PERIOD_SECS = 60.0;
 
 // TODO: move this to a utility class?
 function findSocketBySessionID(sessionId) {
@@ -26,6 +26,34 @@ function getShrubByID(id) {
 function generateNewSessionExpiryDate() {
     return new Date(Date.now() + (ACTIVE_SESSION_EXPIRATION_PERIOD_SECS * 1000));
 }
+function generateNewOfferExpiryDate() {
+    return new Date(Date.now() + (OFFER_EXPIRATION_PERIOD_SECS * 1000));
+}
+
+function removeSessionFromWaitingQueue(waitingSessions, sessionId) {
+    let sessionIndex = waitingSessions.indexOf(sessionId);
+    if (sessionIndex >= 0) {
+        waitingSessions.splice(sessionIndex, 1);
+    }
+}
+function moveSessionToBackOfQueue(waitingSessions, sessionId) {
+    removeSessionFromWaitingQueue(waitingSessions, sessionId);
+    waitingSessions.push(sessionId);
+}
+
+function estimateWaitTime(waitingSessions, activeSession, offeredSession, sessionId) {
+    let sessionIndex = waitingSessions.indexOf(sessionId);
+    if (sessionIndex < 0) return 0;
+
+    // if the session already has an offer, it's always a 0
+    if (offeredSession && offeredSession.id === sessionId) return 0;
+
+    let activeWaitTime = activeSession ? Math.max(activeSession.expiryDate.getTime() - Date.now(), 0) : 0;
+    let queueWaitTime = (sessionIndex + (offeredSession ? 1 : 0)) * ACTIVE_SESSION_EXPIRATION_PERIOD_SECS * 1000;
+
+    // return the value in seconds
+    return (activeWaitTime + queueWaitTime) / 1000;
+}
 
 // TODO: should this really be a class, not just a weird bunch of methods added to each shrub?
 shrubs.forEach(function(shrub) {
@@ -40,7 +68,6 @@ shrubs.forEach(function(shrub) {
             if (socket) {
                 socket.emit('sessionDeactivated', shrub.id);
             } else {
-                // TODO: if we can't find a socket for that session, we should probably offer it to the next in line (and so forth?)
                 console.log(`Can't find socket for ${shrub.activeSession.id} to send deactivation notice.`);
             }
 
@@ -48,7 +75,34 @@ shrubs.forEach(function(shrub) {
 
             // give it to the next in line!
             shrub.offerNextSession();
-        } // else if (shrub.offeredSession && shrub.offeredSession.expiryDate.getTime() <= Date.now()) {
+        } else if (shrub.offeredSession && shrub.offeredSession.expiryDate.getTime() <= Date.now()) {
+            let socket = findSocketBySessionID(shrub.offeredSession.id);
+            if (socket) {
+                socket.emit('sessionOfferRevoked', shrub.id);
+            } else {
+                console.log(`Can't find socket for ${shrub.offeredSession.id} to send offer revocation notice.`);
+            }
+
+            // move their session to the back of the queue and keep going
+            moveSessionToBackOfQueue(shrub.waitingSessions, shrub.offeredSession.id);
+            delete shrub.offeredSession;
+    
+            // give it to the next in line!
+            shrub.offerNextSession();
+        }
+    };
+
+    shrub.sendUpdatedWaitTimes = function() {
+        shrub.waitingSessions.forEach(function(sessionId) {
+            // if a session has already been offered, don't send a wait time
+            if (shrub.offeredSession && sessionId === shrub.offeredSession.id) return;
+
+            let socket = findSocketBySessionID(sessionId);
+            if (socket) {
+                let waitTime = estimateWaitTime(shrub.waitingSessions, shrub.activeSession, shrub.offeredSession, sessionId);
+                socket.emit('waitTimeUpdated', { shrubId: shrub.id, estimatedWaitTime: waitTime });
+            }            
+        });
     };
 
     shrub.requestActivateSession = function(socket) {
@@ -63,6 +117,7 @@ shrubs.forEach(function(shrub) {
                 shrub.activeSession = { id: sessionId, expiryDate: generateNewSessionExpiryDate() };
             }
             socket.emit('sessionActivated', { shrubId: shrub.id, expiryDate: shrub.activeSession.expiryDate });
+            shrub.sendUpdatedWaitTimes();
             return;
         }
 
@@ -71,15 +126,15 @@ shrubs.forEach(function(shrub) {
             shrub.waitingSessions.push(sessionId);
         }
 
-        // TODO: use a proper wait time estimate here
-        socket.emit('sessionWaiting', { shrubId: shrub.id, estimatedWaitTime: shrub.waitingSessions.length * 60 })
+        let waitTime = estimateWaitTime(shrub.waitingSessions, shrub.activeSession, shrub.offeredSession, sessionId);
+        socket.emit('sessionWaiting', { shrubId: shrub.id, estimatedWaitTime: waitTime })
     };
 
     shrub.deactivateSession = function(socket) {
         let sessionId = socket.request.session.id;
 
         // ya can't deactivate a session that's not activated
-        if (!shurb.activeSession || shrub.activeSession.id !== sessionId) {
+        if (!shrub.activeSession || shrub.activeSession.id !== sessionId) {
             console.log(`Shrub ${shrub.id} can't deactivate session because it isn't currently active.`);
             return;
         }
@@ -93,32 +148,48 @@ shrubs.forEach(function(shrub) {
     };
 
     shrub.offerNextSession = function() {
-        let nextSessionUp = shrub.waitingSessions[0];
-
+        console.log('offer next session!');
         // if the queue's empty, we're done! nobody else is waiting.
-        if (!nextSessionUp) {
+        if (!shrub.waitingSessions.length) {
+            console.log('no waiting queue found, giving up');
             return;
         }
 
-        shrub.offeredSession = nextSessionUp;
+        // find the next session (assuming)
+        var nextSessionUp;
+        var socket;
+        do {
+            nextSessionUp = shrub.waitingSessions[0];
+            socket = findSocketBySessionID(nextSessionUp);
+            console.log(`Found socket for ${nextSessionUp}? ${!!socket}`);
 
-        let socket = findSocketBySessionID(nextSessionUp);
+            if (!socket) {
+                console.log(`Can't find socket for ${nextSessionUp} to offer the next active session, removing from waiting queue.`);
+
+                removeSessionFromWaitingQueue(nextSessionUp);
+            }
+        } while (!socket && shrub.waitingSessions.length);
+
+        // we couldn't get anyone willing to play with us for now (i.e. no live connections int he queue)
         if (!socket) {
-            // TODO: if we can't find a socket for that session, we should probably offer it to the next in line (and so forth?)
-            console.log(`Can't find socket for ${nextSessionUp} to offer the next active session.`);
+            console.log('no socket found, giving up');
             return;
         }
+
+        shrub.offeredSession = { id: nextSessionUp, expiryDate: generateNewOfferExpiryDate() };
+        console.log(`OFFERING SESSION TO ${shrub.offeredSession.id}`);
         socket.emit('sessionOffered', {
             shrubId: shrub.id,
-            offerExpiryDate: new Date(Date.now() + (OFFER_EXPIRATION_PERIOD_SECS * 1000)),
+            offerExpiryDate: shrub.offeredSession.expiryDate
         });
+        shrub.sendUpdatedWaitTimes();
     };
 
     shrub.declineOfferedSession = function(socket) {
         let sessionId = socket.request.session.id;
 
         // ya can't decline a session that's never been offered
-        if (shrub.offeredSession !== sessionId) {
+        if (!shrub.offeredSession || shrub.offeredSession.id !== sessionId) {
             console.log(`Shrub ${shrub.id} can't decline offered session because session ${sessionId} hasn't been offered.`);
             return;
         }
@@ -126,10 +197,7 @@ shrubs.forEach(function(shrub) {
         socket.emit('sessionOfferRevoked', shrub.id);
 
         // remove the session from waiting since they don't want control (and from offered)
-        let sessionIndex = shrub.waitingSessions.findIndex(function(session) {
-            return sessionId === session.id;
-        });
-        shrub.waitingSessions.splice(sessionIndex, 1);
+        removeSessionFromWaitingQueue(shrub.waitingSessions, sessionId);
         delete shrub.offeredSession;
 
         // give it to the next in line!
@@ -139,20 +207,18 @@ shrubs.forEach(function(shrub) {
     shrub.acceptOfferedSession = function(socket) {
         let sessionId = socket.request.session.id;
 
-        if (shrub.offeredSession !== sessionId) {
+        if (!shrub.offeredSession || shrub.offeredSession.id !== sessionId) {
             console.log(`Shrub ${shrub.id} did not offer session to ${sessionId}. Ignoring.`);
             return;
         }
 
         // remove the session from waiting since it's becoming active (and from offered)
-        let sessionIndex = shrub.waitingSessions.findIndex(function(session) {
-            return sessionId === session.id;
-        });
-        shrub.waitingSessions.splice(sessionIndex, 1);
+        removeSessionFromWaitingQueue(shrub.waitingSessions, sessionId);
         delete shrub.offeredSession;
 
         shrub.activeSession = { id: sessionId, expiryDate: generateNewSessionExpiryDate() };
         socket.emit('sessionActivated', { shrubId: shrub.id, expiryDate: shrub.activeSession.expiryDate });
+        shrub.sendUpdatedWaitTimes();
     };
 
     setInterval(shrub.checkExpiryDates, 1000); // 1 second

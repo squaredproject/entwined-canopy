@@ -46,7 +46,7 @@ export default {
   methods: {
     declineOffer: function() {
       this.$socket.client.emit('declineOfferedSession', this.shrubId);
-      // TODO: what should happen next?
+      this.$router.push('/');
     },
     acceptOffer: function() {
       this.$socket.client.emit('acceptOfferedSession', this.shrubId);
