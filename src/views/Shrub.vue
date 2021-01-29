@@ -1,6 +1,6 @@
 <template>
   <div class="shrub">
-    <ShrubControlPanel :shrubId="shrubId" v-if="state === 'active'"/>
+    <ShrubControlPanel :shrubId="shrubId" :sessionExpiryDate="sessionExpiryDate" v-if="state === 'active'"/>
     <ShrubWaitingScreen :shrubId="shrubId" :estimatedWaitTime="estimatedWaitTime" v-if="state === 'waiting'"/>
     <ShrubOfferScreen :shrubId="shrubId" :offerExpiryDate="offerExpiryDate" v-if="state === 'offered'"/>
     <p v-if="state === 'loading'">Loading shrub interactivity...</p>
@@ -40,20 +40,22 @@ export default {
     return {
       state: 'loading',
       estimatedWaitTime: 0,
-      offerExpiryDate: null
+      offerExpiryDate: null,
+      sessionExpiryDate: null
     };
   },
   sockets: {
     connect() {
       console.log('Shrub.vue socket connected');
     },
-    sessionActivated(shrubId) {
-      if (shrubId !== this.shrubId) {
-        console.log(`Unexpected event for shrub ${shrubId} (shrub ${this.shrubId} is loaded).`);
+    sessionActivated(data) {
+      if (data.shrubId !== this.shrubId) {
+        console.log(`Unexpected event for shrub ${data.shrubId} (shrub ${this.shrubId} is loaded).`);
         return;
       }
 
       this.state = 'active';
+      this.sessionExpiryDate = new Date(data.expiryDate);
       console.log('Shrub.vue session activated');
     },
     sessionDeactivated(shrubId) {
@@ -63,6 +65,7 @@ export default {
       }
 
       this.state = 'loading';
+      this.$router.push('/');
       console.log('Shrub.vue session deactivated');
     },
     sessionWaiting(data) {

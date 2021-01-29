@@ -1,6 +1,7 @@
 const shrubs = require('../entwinedShrubs');
 
-const OFFER_EXPIRATION_PERIOD_SECS = 15.0;
+const OFFER_EXPIRATION_PERIOD_SECS = 5.0;
+const ACTIVE_SESSION_EXPIRATION_PERIOD_SECS = 15.0;
 
 // TODO: move this to a utility class?
 function findSocketBySessionID(sessionId) {
@@ -22,6 +23,10 @@ function getShrubByID(id) {
     });
 }
 
+function generateNewSessionExpiryDate() {
+    return new Date(Date.now() + (ACTIVE_SESSION_EXPIRATION_PERIOD_SECS * 1000));
+}
+
 // TODO: should this really be a class, not just a weird bunch of methods added to each shrub?
 shrubs.forEach(function(shrub) {
     // if the ID is an int or anything else, convert to a string so it's easier to work with
@@ -29,15 +34,35 @@ shrubs.forEach(function(shrub) {
     shrub.id = String(shrub.id);
     shrub.waitingSessions = [];
 
+    shrub.checkExpiryDates = function() {
+        if (shrub.activeSession && shrub.activeSession.expiryDate.getTime() <= Date.now()) {
+            let socket = findSocketBySessionID(shrub.activeSession.id);
+            if (socket) {
+                socket.emit('sessionDeactivated', shrub.id);
+            } else {
+                // TODO: if we can't find a socket for that session, we should probably offer it to the next in line (and so forth?)
+                console.log(`Can't find socket for ${shrub.activeSession.id} to send deactivation notice.`);
+            }
+
+            delete shrub.activeSession;
+
+            // give it to the next in line!
+            shrub.offerNextSession();
+        } // else if (shrub.offeredSession && shrub.offeredSession.expiryDate.getTime() <= Date.now()) {
+    };
+
     shrub.requestActivateSession = function(socket) {
         let sessionId = socket.request.session.id;
 
         // if there's nobody currently controlling and nobody offered, just activate the session for them immediately
         // or if they're actually _already_ the active session
-        if ((!shrub.activeSession && !shrub.offeredSession) || shrub.activeSession === sessionId) {
+        if ((!shrub.activeSession && !shrub.offeredSession) || (shrub.activeSession && shrub.activeSession.id === sessionId)) {
             delete shrub.offeredSession;
-            shrub.activeSession = sessionId;
-            socket.emit('sessionActivated', shrub.id);
+            // only regenerate the expiry date if they're not already active
+            if (!shrub.activeSession) {
+                shrub.activeSession = { id: sessionId, expiryDate: generateNewSessionExpiryDate() };
+            }
+            socket.emit('sessionActivated', { shrubId: shrub.id, expiryDate: shrub.activeSession.expiryDate });
             return;
         }
 
@@ -54,7 +79,7 @@ shrubs.forEach(function(shrub) {
         let sessionId = socket.request.session.id;
 
         // ya can't deactivate a session that's not activated
-        if (shrub.activeSession !== sessionId) {
+        if (!shurb.activeSession || shrub.activeSession.id !== sessionId) {
             console.log(`Shrub ${shrub.id} can't deactivate session because it isn't currently active.`);
             return;
         }
@@ -126,9 +151,11 @@ shrubs.forEach(function(shrub) {
         shrub.waitingSessions.splice(sessionIndex, 1);
         delete shrub.offeredSession;
 
-        shrub.activeSession = sessionId;
-        socket.emit('sessionActivated', shrub.id);
+        shrub.activeSession = { id: sessionId, expiryDate: generateNewSessionExpiryDate() };
+        socket.emit('sessionActivated', { shrubId: shrub.id, expiryDate: shrub.activeSession.expiryDate });
     };
+
+    setInterval(shrub.checkExpiryDates, 1000); // 1 second
 });
 
 

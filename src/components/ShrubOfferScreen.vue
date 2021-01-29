@@ -21,7 +21,7 @@ export default {
   created() {
     var self = this;
 
-    // this is basically a crappy kluge to make offerTimeRemainningString update regularly
+    // this is basically a crappy kluge to make offerTimeRemainingString update regularly
     this.nowInterval = setInterval(function () {
         self.nowTimestamp = Date.now();
     }, 250);

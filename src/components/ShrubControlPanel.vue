@@ -30,6 +30,9 @@
       <span>{{ $socket.connected ? 'Connected' : 'Disconnected' }}</span>
     </div>
     <div>
+      <span>{{sessionTimeRemainingString}} remaining in session</span>
+    </div>
+    <div>
       <a href="#" v-on:click="stopControlling">Stop Controlling</a>
     </div>
   </div>
@@ -51,14 +54,35 @@ let makeSettingUpdateFunction = function(key) {
 
 export default {
   name: 'ShrubControlPanel',
-  props: ['shrubId'],
+  props: ['shrubId', 'sessionExpiryDate'],
   data() {
     return {
       hue: 50,
       saturation: 50,
       brightness: 50,
       colorCloud: 50,
+
+      nowTimestamp: Date.now(),
+      nowInterval: null,
     };
+  },
+  created() {
+    var self = this;
+
+    // this is basically a crappy kluge to make sessionTimeRemainingString update regularly
+    this.nowInterval = setInterval(function () {
+        self.nowTimestamp = Date.now();
+    }, 250);
+  },
+  computed: {
+    sessionTimeRemainingString: function() {
+      if (!this.sessionExpiryDate) {
+        return '00:00';
+      }
+
+      let timeRemaining = Math.max(this.sessionExpiryDate.getTime() - this.nowTimestamp, 0);
+      return new Date(timeRemaining).toISOString().substr(14, 5);
+    }
   },
   watch: {
     hue: makeSettingUpdateFunction('hue'),
