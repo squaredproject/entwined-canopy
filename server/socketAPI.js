@@ -77,21 +77,31 @@ io.on('connection', (socket) => {
 
   // shrub interactivity controls
 
-  // TODO: make sure only the active session can call these methods (i.e. the sessions in the waiting queue can't take control)
-
   socket.on('updateShrubSetting', (updateObj) => {
-    if (!shrubIdIsValid(updateObj.shrubId)) {
+    let shrub = getShrubByID(updateObj.shrubId);
+    if (!shrub) {
       console.log('Invalid shrub ID ' + updateObj.shrubId);
       return;
     }
+    if (!shrub.activeSession || shrub.activeSession.id !== socket.request.session.id) {
+      console.log(`Session ${socket.request.session.id} isn't active and can't perform updates.`);
+      return;
+    }
+
     console.log(`Updating shrub ${updateObj.shrubId} setting ${updateObj.key} to value ${updateObj.value}`);
   });
 
   socket.on('runOneShotTriggerable', (updateObj) => {
-    if (!shrubIdIsValid(updateObj.shrubId)) {
+    let shrub = getShrubByID(updateObj.shrubId);
+    if (!shrub) {
       console.log('Invalid shrub ID ' + updateObj.shrubId);
       return;
     }
+    if (!shrub.activeSession || shrub.activeSession.id !== socket.request.session.id) {
+      console.log(`Session ${socket.request.session.id} isn't active and can't run teriggerables.`);
+      return;
+    }
+
     console.log(`Running one shot triggerable ${updateObj.triggerableName} on shrub ${updateObj.shrubId}`)
   });
 });
