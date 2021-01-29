@@ -5,7 +5,7 @@ const socketAPI = {
 const config = require('../config');
 
 const validShrubIDs = require('../entwinedShrubs').map(function(shrubConfig) { return String(shrubConfig.id); });
-let getShrubByID = require('./shrub-sessions').getShrubByID;
+let getShrubByID = require('./Shrub').getShrubByID;
 
 function shrubIdIsValid(shrubId) {
   return validShrubIDs.includes(shrubId);
