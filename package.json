@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "license": "MIT",
+  "engines": {
+    "node": "14.x",
+    "yarn": "1.x"
+  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
