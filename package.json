@@ -13,7 +13,7 @@
     "start": "yarn --cwd server start",
     "dev": "yarn update-config && concurrently --kill-others \"yarn --cwd client serve\" \"yarn --cwd server dev\"",
     "deploy-server": "yarn update-config && git subtree split --prefix server -b prod-server && git checkout prod-server && git mv .gitignore-deploy .gitignore && mv server/config config && git add . && git commit -a -m \"Deploy\" && git push -f heroku prod-server:main && git checkout main",
-    "deploy-client": "yarn update-config && git subtree split --prefix client -b prod-client && git checkout prod-client && git mv .gitignore-deploy .gitignore && mv client/config config && git add . && git commit -a -m \"Deploy\" && git push -f origin prod-client && git checkout main"
+    "deploy-client": "git push -f origin main:prod-client"
   },
   "dependencies": {
     "concurrently": "^5.3.0"
