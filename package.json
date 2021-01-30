@@ -8,11 +8,12 @@
     "yarn": "1.x"
   },
   "scripts": {
-    "build": "yarn --cwd client build",
+    "update-config": "cp -r config client/ && cp -r config server/",
+    "build": "yarn update-config && yarn --cwd client build",
     "lint": "yarn --cwd client lint",
     "start": "yarn --cwd server start",
-    "dev": "concurrently --kill-others \"yarn --cwd client serve\" \"yarn --cwd server dev\"",
-    "deploy": "git subtree split --prefix server -b deploy && git push -f heroku deploy:main"
+    "dev": "yarn update-config && concurrently --kill-others \"yarn --cwd client serve\" \"yarn --cwd server dev\"",
+    "deploy": "yarn update-config && git subtree split --prefix server -b deploy && git push -f heroku deploy:main"
   },
   "dependencies": {
     "concurrently": "^5.3.0"

@@ -66,6 +66,10 @@ typings/
 /dist
 /client/dist
 
+# Heroku deployment process
+/server/config
+/client/config
+
 # editor config
 .idea
 .vscode

@@ -1,4 +1,4 @@
-const config = require('../config');
+const config = require('./config/config');
 const io = require('socket.io')(null, {
   cors: {
     origin: process.env.NODE_ENV === 'production' ? config.staticSiteURLProd : config.staticSiteURLDev,
@@ -10,7 +10,7 @@ const socketAPI = {
   io,
 };
 
-const validShrubIDs = require('../entwinedShrubs').map(function(shrubConfig) { return String(shrubConfig.id); });
+const validShrubIDs = require('./config/entwinedShrubs').map(function(shrubConfig) { return String(shrubConfig.id); });
 let getShrubByID = require('./Shrub').getShrubByID;
 
 function shrubIdIsValid(shrubId) {

@@ -1,4 +1,4 @@
-const shrubConfigs = require('../entwinedShrubs');
+const shrubConfigs = require('./config/entwinedShrubs');
 let shrubs = [];
 
 const OFFER_EXPIRATION_PERIOD_SECS = 15.0;

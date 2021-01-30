@@ -1,6 +1,6 @@
 const md5 = require('md5');
-const config = require('./config');
-const shrubConfigs = require('./entwinedShrubs');
+const config = require('./config/config');
+const shrubConfigs = require('./config/entwinedShrubs');
 
 let baseURL = 'http://localhost:3000';
 
