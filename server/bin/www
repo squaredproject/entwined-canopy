@@ -4,23 +4,21 @@
  * Module dependencies.
  */
 
-var app = require('../app');
 var debug = require('debug')('entwined-canopy:server');
 var http = require('http');
 let socketAPI = require('../socketAPI');
 
 /**
- * Get port from environment and store in Express.
+ * Get port from environment
  */
 
 var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server = http.createServer();
 socketAPI.io.attach(server);
 
 /**
