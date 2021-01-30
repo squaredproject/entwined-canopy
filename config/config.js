@@ -3,6 +3,6 @@ module.exports = {
 
     // TODO: should these go in a .env file instead?
     staticSiteURLDev: 'http://localhost:8080',
-    staticSiteURLProd: 'http://localhost:5000',
+    staticSiteURLProd: 'https://entwined-canopy.netlify.app',
     prodWebSocketAPI: 'https://entwined-canopy.herokuapp.com'
 };
