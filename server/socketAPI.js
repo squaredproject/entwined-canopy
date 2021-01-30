@@ -1,7 +1,7 @@
 const config = require('../config');
 const io = require('socket.io')(null, {
   cors: {
-    origin: config.staticSiteURL,
+    origin: process.env.NODE_ENV === 'production' ? config.staticSiteURLProd : config.staticSiteURLDev,
     methods: ['GET', 'POST'],
     credentials: true
   }

@@ -64,6 +64,7 @@ typings/
 
 .DS_Store
 /dist
+/client/dist
 
 # editor config
 .idea
