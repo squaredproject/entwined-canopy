@@ -1,8 +1,14 @@
-const io = require('socket.io')();
+const config = require('../config');
+const io = require('socket.io')(null, {
+  cors: {
+    origin: config.staticSiteURL,
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
 const socketAPI = {
   io,
 };
-const config = require('../config');
 
 const validShrubIDs = require('../entwinedShrubs').map(function(shrubConfig) { return String(shrubConfig.id); });
 let getShrubByID = require('./Shrub').getShrubByID;
@@ -10,6 +16,12 @@ let getShrubByID = require('./Shrub').getShrubByID;
 function shrubIdIsValid(shrubId) {
   return validShrubIDs.includes(shrubId);
 };
+
+// make the sessionId property a little easier to find
+io.use((socket, next) => {
+  socket.sessionId = socket.handshake.auth.sessionId;
+  next();
+});
 
 // TODO: Socket.IO namespaces would be a cleaner way to do this, but
 // had trouble getting them working on the client-side with our Vue/Socket lib
@@ -31,7 +43,7 @@ io.on('connection', (socket) => {
       return;
     }
 
-    console.log(`Activating session ${socket.request.session.id} for shrub ${shrubId}.`);
+    console.log(`Activating session ${socket.sessionId} for shrub ${shrubId}.`);
 
     shrub.requestActivateSession(socket);
   });
@@ -44,7 +56,7 @@ io.on('connection', (socket) => {
       return;
     }
 
-    console.log(`Deactivating session ${socket.request.session.id} for shrub ${shrubId}.`);
+    console.log(`Deactivating session ${socket.sessionId} for shrub ${shrubId}.`);
 
     shrub.deactivateSession(socket);
   });
@@ -57,7 +69,7 @@ io.on('connection', (socket) => {
       return;
     }
 
-    console.log(`Accepting offered session ${socket.request.session.id} for shrub ${shrubId}.`);
+    console.log(`Accepting offered session ${socket.sessionId} for shrub ${shrubId}.`);
 
     shrub.acceptOfferedSession(socket);
   });
@@ -70,7 +82,7 @@ io.on('connection', (socket) => {
       return;
     }
 
-    console.log(`Declining offered session ${socket.request.session.id} for shrub ${shrubId}.`);
+    console.log(`Declining offered session ${socket.sessionId} for shrub ${shrubId}.`);
 
     shrub.declineOfferedSession(socket);
   });
@@ -83,8 +95,8 @@ io.on('connection', (socket) => {
       console.log('Invalid shrub ID ' + updateObj.shrubId);
       return;
     }
-    if (!shrub.activeSession || shrub.activeSession.id !== socket.request.session.id) {
-      console.log(`Session ${socket.request.session.id} isn't active and can't perform updates.`);
+    if (!shrub.activeSession || shrub.activeSession.id !== socket.sessionId) {
+      console.log(`Session ${socket.sessionId} isn't active and can't perform updates.`);
       return;
     }
 
@@ -97,8 +109,8 @@ io.on('connection', (socket) => {
       console.log('Invalid shrub ID ' + updateObj.shrubId);
       return;
     }
-    if (!shrub.activeSession || shrub.activeSession.id !== socket.request.session.id) {
-      console.log(`Session ${socket.request.session.id} isn't active and can't run teriggerables.`);
+    if (!shrub.activeSession || shrub.activeSession.id !== socket.sessionId) {
+      console.log(`Session ${socket.sessionId} isn't active and can't run teriggerables.`);
       return;
     }
 

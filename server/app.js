@@ -2,7 +2,6 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const history = require('connect-history-api-fallback');
 const session = require('express-session');
 const socketAPI = require('./socketAPI');
 
@@ -27,10 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(sessionMiddleware);
-app.use(express.static(path.join(__dirname, '../dist')));
 
 app.use('/', indexRouter);
-
-app.use(history());
 
 module.exports = app;

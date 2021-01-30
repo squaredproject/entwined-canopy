@@ -12,9 +12,9 @@ import md5 from 'md5';
 import ShrubControlPanel from '../components/ShrubControlPanel.vue';
 import ShrubWaitingScreen from '../components/ShrubWaitingScreen.vue';
 import ShrubOfferScreen from '../components/ShrubOfferScreen.vue';
-import config from '../../config.js';
+import config from '../../../config';
 
-const validShrubIDs = require('../../entwinedShrubs').map(function(shrubConfig) { return String(shrubConfig.id); });
+const validShrubIDs = require('../../../entwinedShrubs').map(function(shrubConfig) { return String(shrubConfig.id); });
 function checkURLValidity(route) {
   let shrubId = route.params.shrubId;
   let accessKey = route.query.key;

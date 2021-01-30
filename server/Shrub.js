@@ -13,7 +13,7 @@ function findSocketBySessionID(sessionId) {
     let io = require('./socketAPI').io;
 
     for (var [socketId, socket] of io.sockets.sockets) {
-        if (socket.request.session.id === sessionId) {
+        if (socket.sessionId === sessionId) {
             return socket;
         }
     }
@@ -47,7 +47,7 @@ class Shrub {
     /* Public Instance Methods */
 
     requestActivateSession(socket) {
-        let sessionId = socket.request.session.id;
+        let sessionId = socket.sessionId;
 
         // if there's nobody currently controlling and nobody offered, just activate the session for them immediately
         // or if they're actually _already_ the active session
@@ -72,7 +72,7 @@ class Shrub {
     }
 
     deactivateSession(socket) {
-        let sessionId = socket.request.session.id;
+        let sessionId = socket.sessionId;
 
         // ya can't deactivate a session that's not activated
         if (!this.activeSession || this.activeSession.id !== sessionId) {
@@ -89,7 +89,7 @@ class Shrub {
     }
 
     declineOfferedSession(socket) {
-        let sessionId = socket.request.session.id;
+        let sessionId = socket.sessionId;
 
         // ya can't decline a session that's never been offered
         if (!this.offeredSession || this.offeredSession.id !== sessionId) {
@@ -108,7 +108,7 @@ class Shrub {
     }
 
     acceptOfferedSession(socket) {
-        let sessionId = socket.request.session.id;
+        let sessionId = socket.sessionId;
 
         if (!this.offeredSession || this.offeredSession.id !== sessionId) {
             console.log(`Shrub ${this.id} did not offer session to ${sessionId}. Ignoring.`);
