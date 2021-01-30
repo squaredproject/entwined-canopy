@@ -4,5 +4,5 @@ module.exports = {
     // TODO: should these go in a .env file instead?
     staticSiteURLDev: 'http://localhost:8080',
     staticSiteURLProd: 'http://localhost:5000',
-    prodWebSocketAPI: 'http://entwined-canopy.herokuapp.com'
+    prodWebSocketAPI: 'https://entwined-canopy.herokuapp.com'
 };
