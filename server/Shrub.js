@@ -62,6 +62,16 @@ class Shrub {
             return;
         }
 
+        if (this.offeredSession && this.offeredSession.id == sessionId) {
+            // we already offered them a session (probably they just reloaded the page)
+            // remind them...
+            socket.emit('sessionOffered', {
+                shrubId: this.id,
+                offerExpiryDate: this.offeredSession.expiryDate
+            });
+            return;
+        }
+
         // no duplicates in the queue!
         if (!this.waitingSessions.includes(sessionId)) {
             this.waitingSessions.push(sessionId);
