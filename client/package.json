@@ -9,7 +9,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "yarn --cwd .. update-config && vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "deploy": "git push -f origin main:prod-client"
   },
   "dependencies": {
     "md5": "^2.3.0",
