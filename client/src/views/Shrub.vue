@@ -47,6 +47,7 @@ export default {
   sockets: {
     connect() {
       console.log('Shrub.vue socket connected');
+      this.$socket.client.emit('activateSession', this.shrubId);
     },
     sessionActivated(data) {
       if (data.shrubId !== this.shrubId) {
@@ -115,9 +116,6 @@ export default {
     } else {
       next();
     }
-  },
-  beforeMount() {
-    this.$socket.client.emit('activateSession', this.shrubId);
   },
   components: {
     ShrubControlPanel,
