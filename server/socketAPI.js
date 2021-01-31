@@ -26,12 +26,12 @@ io.use((socket, next) => {
 // TODO: Socket.IO namespaces would be a cleaner way to do this, but
 // had trouble getting them working on the client-side with our Vue/Socket lib
 io.on('connection', (socket) => {
-  console.log('A user connected');
+  console.log(`Session ${socket.sessionId} connected`);
 
   // lifecycle methods
 
   socket.on('disconnect', () => {
-    console.log('user disconnected');
+    console.log(`Session ${socket.sessionId} disconnected`);
   });
 
   // shrub session management
