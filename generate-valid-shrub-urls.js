@@ -2,7 +2,7 @@ const md5 = require('md5');
 const config = require('./config/config');
 const shrubConfigs = require('./config/entwinedShrubs');
 
-let baseURL = 'http://localhost:3000';
+let baseURL = 'https://entwined.charliestigler.com';
 
 shrubConfigs.forEach(function(shrubConfig) {
     let shrubId = shrubConfig.id;

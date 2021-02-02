@@ -107,4 +107,12 @@ export default {
 </script>
 
 <style scoped>
+.one-shot-triggers {
+  margin: 10px;
+}
+.one-shot-triggers a {
+  font-size: 34px;
+  text-decoration: none;
+  margin: 10px;
+}
 </style>
