@@ -14,7 +14,7 @@ Install JS dependencies:
 yarn install
 ```
 
-## Running for developmnet
+## Running for development
 
 Compile and serve client, plus run and auto-restart Socket.IO server on changes:
 ```
