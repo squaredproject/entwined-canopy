@@ -9,10 +9,10 @@ const ACTIVE_SESSION_EXPIRATION_PERIOD_SECS = 60.0;
  */ 
 
  // TODO: move this to a separate utility file
-function findSocketBySessionID(sessionId) {
-    let io = require('./socketAPI').io;
+function findUserSocketBySessionID(sessionId) {
+    let io = require('./sockets/sockets').io;
 
-    for (var [socketId, socket] of io.sockets.sockets) {
+    for (var [socketId, socket] of io.of('/user').sockets) {
         if (socket.sessionId === sessionId) {
             return socket;
         }
@@ -58,6 +58,7 @@ class Shrub {
                 this.activeSession = { id: sessionId, expiryDate: generateNewSessionExpiryDate() };
             }
             socket.emit('sessionActivated', { shrubId: this.id, expiryDate: this.activeSession.expiryDate });
+            console.log(`LX Server mock send: interactionStarted(${this.id})`);
             this._sendUpdatedWaitTimes();
             return;
         }
@@ -93,6 +94,7 @@ class Shrub {
         delete this.activeSession;
 
         socket.emit('sessionDeactivated', this.id);
+        console.log(`LX Server mock send: interactionStopped(${this.id})`);
 
         // give it to the next in line!
         this._offerNextSession();
@@ -131,6 +133,7 @@ class Shrub {
 
         this.activeSession = { id: sessionId, expiryDate: generateNewSessionExpiryDate() };
         socket.emit('sessionActivated', { shrubId: this.id, expiryDate: this.activeSession.expiryDate });
+        console.log(`LX Server mock send: interactionStarted(${this.id})`);
         this._sendUpdatedWaitTimes();
     }
 
@@ -138,19 +141,20 @@ class Shrub {
 
     _checkExpiryDates() {
         if (this.activeSession && this.activeSession.expiryDate.getTime() <= Date.now()) {
-            let socket = findSocketBySessionID(this.activeSession.id);
+            let socket = findUserSocketBySessionID(this.activeSession.id);
             if (socket) {
                 socket.emit('sessionDeactivated', this.id);
             } else {
                 console.log(`Can't find socket for ${this.activeSession.id} to send deactivation notice.`);
             }
+            console.log(`LX Server mock send: interactionStopped(${this.id})`);
 
             delete this.activeSession;
 
             // give it to the next in line!
             this._offerNextSession();
         } else if (this.offeredSession && this.offeredSession.expiryDate.getTime() <= Date.now()) {
-            let socket = findSocketBySessionID(this.offeredSession.id);
+            let socket = findUserSocketBySessionID(this.offeredSession.id);
             if (socket) {
                 socket.emit('sessionOfferRevoked', this.id);
             } else {
@@ -171,7 +175,7 @@ class Shrub {
             // if a session has already been offered, don't send a wait time
             if (this.offeredSession && sessionId === this.offeredSession.id) return;
 
-            let socket = findSocketBySessionID(sessionId);
+            let socket = findUserSocketBySessionID(sessionId);
             if (socket) {
                 let waitTime = this._estimatedWaitTime(sessionId);
                 socket.emit('waitTimeUpdated', { shrubId: this.id, estimatedWaitTime: waitTime });
@@ -192,7 +196,7 @@ class Shrub {
         var socket;
         do {
             nextSessionUp = this.waitingSessions[0];
-            socket = findSocketBySessionID(nextSessionUp);
+            socket = findUserSocketBySessionID(nextSessionUp);
             console.log(`Found socket for ${nextSessionUp}? ${!!socket}`);
 
             if (!socket) {

@@ -6,7 +6,7 @@
 
 var debug = require('debug')('entwined-canopy:server');
 var http = require('http');
-let socketAPI = require('../socketAPI');
+let socketAPI = require('../sockets/sockets');
 
 /**
  * Get port from environment

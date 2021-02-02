@@ -5,6 +5,15 @@ import App from './App.vue';
 import router from './router'
 import { uid } from 'uid';
 
+let userIO = io(process.env.VUE_APP_SOCKET_API_URL, {
+  withCredentials: true,
+  auth: (cb) => {
+    cb({
+      sessionId: sessionId
+    });
+  }
+});
+
 Vue.config.productionTip = false;
 
 // TODO: is a cookie more reliable than localStorage?
@@ -13,14 +22,7 @@ if (!sessionId) {
   sessionId = uid(24);
   localStorage.setItem('entwined-canopy-session-id', sessionId);
 }
-Vue.use(VueSocketIOExt, io(process.env.VUE_APP_SOCKET_API_URL, {
-  withCredentials: true,
-  auth: (cb) => {
-    cb({
-      sessionId: sessionId
-    });
-  }
-}));
+Vue.use(VueSocketIOExt, userIO);
 
 console.log('GOGOT SOCKET API URL ', process.env.VUE_APP_SOCKET_API_URL);
 
