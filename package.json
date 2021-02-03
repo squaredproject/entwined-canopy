@@ -9,6 +9,7 @@
   "scripts": {
     "update-config": "cp -r config client/ && cp -r config server/",
     "build": "yarn update-config && yarn --cwd client build",
+    "install-all": "yarn --cwd client install && yarn --cwd server install && yarn install",
     "lint": "yarn --cwd client lint",
     "start": "yarn --cwd server start",
     "dev": "yarn update-config && concurrently --kill-others \"yarn --cwd client serve\" \"yarn --cwd server dev\"",

@@ -11,7 +11,7 @@ Install core dependencies:
 
 Install JS dependencies:
 ```
-yarn install
+yarn install-all
 ```
 
 ## Running for development
