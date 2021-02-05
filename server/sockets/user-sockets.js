@@ -1,3 +1,4 @@
+const _ = require('underscore');
 const sculptureState = require('../sculpture-state');
 
 const validShrubIDs = require('../config/entwinedShrubs').map(function(shrubConfig) { return String(shrubConfig.id); });
@@ -5,6 +6,7 @@ let getShrubByID = require('../Shrub').getShrubByID;
 function shrubIdIsValid(shrubId) {
   return validShrubIDs.includes(shrubId);
 };
+let lxSockets = require('./lx-sockets');
 
 const initialize = function(io) {
     const userIO = io.of('/user');
@@ -96,7 +98,7 @@ const initialize = function(io) {
             }
 
             console.log(`Updating shrub ${updateObj.shrubId} setting ${updateObj.key} to value ${updateObj.value}`);
-            console.log(`LX Server mock send: updateShrubSetting(${shrub.id}, ${updateObj.key}, ${updateObj.value})`);
+            lxSockets.emit('updateShrubSetting', _.pick(updateObj, ['shrubId', 'key', 'value']));
         });
 
         socket.on('runOneShotTriggerable', (updateObj) => {
@@ -111,7 +113,7 @@ const initialize = function(io) {
             }
 
             console.log(`Running one shot triggerable ${updateObj.triggerableName} on shrub ${updateObj.shrubId}`)
-            console.log(`LX Server mock send: runOneShotTriggerable(${shrub.id}, ${updateObj.triggerableName})`);
+            lxSockets.emit('runOneShotTriggerable', _.pick(updateObj, ['shrubId', 'triggerableName']));
         });
     });
 
@@ -125,4 +127,6 @@ const initialize = function(io) {
     notifyUpdatedSculptureState();
 };
 
-module.exports = initialize;
+module.exports = {
+    initialize
+};

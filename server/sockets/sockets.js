@@ -10,7 +10,7 @@ const socketAPI = {
   io,
 };
 
-require('./user-sockets')(io);
-require('./lx-sockets')(io);
+require('./user-sockets').initialize(io);
+require('./lx-sockets').initialize(io);
 
 module.exports = socketAPI;

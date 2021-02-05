@@ -1,6 +1,8 @@
 const shrubConfigs = require('./config/entwinedShrubs');
 let shrubs = [];
 
+let lxSockets = require('./sockets/lx-sockets');
+
 const OFFER_EXPIRATION_PERIOD_SECS = 15.0;
 const ACTIVE_SESSION_EXPIRATION_PERIOD_SECS = 60.0;
 
@@ -58,7 +60,7 @@ class Shrub {
                 this.activeSession = { id: sessionId, expiryDate: generateNewSessionExpiryDate() };
             }
             socket.emit('sessionActivated', { shrubId: this.id, expiryDate: this.activeSession.expiryDate });
-            console.log(`LX Server mock send: interactionStarted(${this.id})`);
+            lxSockets.emit('interactionStarted', this.id);
             this._sendUpdatedWaitTimes();
             return;
         }
@@ -94,7 +96,7 @@ class Shrub {
         delete this.activeSession;
 
         socket.emit('sessionDeactivated', this.id);
-        console.log(`LX Server mock send: interactionStopped(${this.id})`);
+        lxSockets.emit('interactionStopped', this.id);
 
         // give it to the next in line!
         this._offerNextSession();
@@ -133,7 +135,7 @@ class Shrub {
 
         this.activeSession = { id: sessionId, expiryDate: generateNewSessionExpiryDate() };
         socket.emit('sessionActivated', { shrubId: this.id, expiryDate: this.activeSession.expiryDate });
-        console.log(`LX Server mock send: interactionStarted(${this.id})`);
+        lxSockets.emit('interactionStarted', this.id);
         this._sendUpdatedWaitTimes();
     }
 
@@ -147,7 +149,7 @@ class Shrub {
             } else {
                 console.log(`Can't find socket for ${this.activeSession.id} to send deactivation notice.`);
             }
-            console.log(`LX Server mock send: interactionStopped(${this.id})`);
+            lxSockets.emit('interactionStopped', this.id);
 
             delete this.activeSession;
 

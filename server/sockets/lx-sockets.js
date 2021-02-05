@@ -1,13 +1,14 @@
 const sculptureState = require('../sculpture-state');
+var lXIO;
 
 const initialize = function(io) {
-    const lxIO = io.of('/lx');
+    lxIO = io.of('/lx');
 
     lxIO.on('connection', (socket) => {
-        console.log('LX CONNECTED!');
+        console.log(`LX CONNECTED! ${lxIO.sockets.length} LX sockets currently open`);
 
         socket.on('modelUpdated', (newModel) => {
-            console.log('LX model updated to ', newModel);
+            console.log('LX connection received modelUpdated: ', newModel);
 
             if (newModel.interactivityEnabled !== undefined) {
                 sculptureState.interactivityEnabled = newModel.interactivityEnabled;
@@ -19,13 +20,37 @@ const initialize = function(io) {
             if (newModel.breakTimerInfo !== undefined) {
                 sculptureState.breakTimer = newModel.breakTimer;
                 // TODO: it's cleaner if the sculpture-state object does this itself
+            }
                 // by watching its own properties
                 sculptureState.emit('stateUpdated');
-            }
         });
     });
 
     console.log(`LX Server mock receive: stateUpdated(${JSON.stringify(sculptureState.serialize())})`);
 };
 
-module.exports = initialize;
+const emit = function(eventName, data) {
+    console.log(`LX connection sending: ${eventName}(${JSON.stringify(data)})`);
+
+    if (!lxIO) {
+        console.log(`Can't send message because LX socket server isn't initialized.`);
+        return;
+    }
+    
+    let sockets = lxIO.sockets;
+    if (sockets.size < 1) {
+        console.log(`Can't send message because no LX server is connected`);
+        return;
+    }
+    console.log('sockets length is ', sockets.size, sockets);
+
+    // if we have multiple connected clients, send to all of them
+    sockets.forEach((socket) => {
+        socket.emit(eventName, data);
+    });
+};
+
+module.exports = {
+    initialize,
+    emit
+};
