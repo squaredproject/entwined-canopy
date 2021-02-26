@@ -24,9 +24,13 @@ const initialize = function(io) {
                 // by watching its own properties
                 sculptureState.emit('stateUpdated');
         });
+
+        socket.on('disconnect', () => {
+            console.log(`LX server disconnected! ${lxIO.sockets.length} LX sockets currently open`);
+        });
     });
 
-    console.log(`LX Server mock receive: stateUpdated(${JSON.stringify(sculptureState.serialize())})`);
+    console.log(`LX Server mock receive: modelUpdated(${JSON.stringify(sculptureState.serialize())})`);
 };
 
 const emit = function(eventName, data) {
