@@ -87,6 +87,8 @@ const initialize = function(io) {
         // shrub interactivity controls
 
         socket.on('updateShrubSetting', (updateObj) => {
+            updateObj = _.pick(updateObj, ['shrubId', 'hue', 'saturation', 'brightness', 'colorCloud']);
+
             let shrub = getShrubByID(updateObj.shrubId);
             if (!shrub) {
                 console.log('Invalid shrub ID ' + updateObj.shrubId);
@@ -97,8 +99,8 @@ const initialize = function(io) {
                 return;
             }
 
-            console.log(`Updating shrub ${updateObj.shrubId} setting ${updateObj.key} to value ${updateObj.value}`);
-            lxSockets.emit('updateShrubSetting', _.pick(updateObj, ['shrubId', 'key', 'value']));
+            console.log(`Updating shrub ${updateObj.shrubId} settings: ${JSON.stringify(_.omit(updateObj, 'shrubId'))}`);
+            lxSockets.emit('updateShrubSetting', updateObj);
         });
 
         socket.on('runOneShotTriggerable', (updateObj) => {
