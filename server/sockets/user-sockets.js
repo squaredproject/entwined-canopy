@@ -99,6 +99,8 @@ const initialize = function(io) {
                 return;
             }
 
+            // TODO enforce min/max values for each setting
+
             console.log(`Updating shrub ${updateObj.shrubId} settings: ${JSON.stringify(_.omit(updateObj, 'shrubId'))}`);
             lxSockets.emit('updateShrubSetting', updateObj);
         });

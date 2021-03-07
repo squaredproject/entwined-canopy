@@ -2,7 +2,7 @@
   <div>
     <div>
       <input type="range" id="hue" name="hue"
-          min="0" max="100" v-model.number="hue">
+          min="0" max="360" v-model.number="hue">
       <label for="hue">Hue Shift</label>
     </div>
     <div>
@@ -56,7 +56,7 @@ export default {
   props: ['shrubId', 'sessionExpiryDate'],
   data() {
     return {
-      hue: 50,
+      hue: 0,
       saturation: 50,
       brightness: 50,
       colorCloud: 50,
