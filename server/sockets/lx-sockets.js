@@ -46,7 +46,6 @@ const emit = function(eventName, data) {
         console.log(`Can't send message because no LX server is connected`);
         return;
     }
-    console.log('sockets length is ', sockets.size, sockets);
 
     // if we have multiple connected clients, send to all of them
     sockets.forEach((socket) => {
