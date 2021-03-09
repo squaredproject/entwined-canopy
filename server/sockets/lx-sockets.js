@@ -5,7 +5,7 @@ const initialize = function(io) {
     lxIO = io.of('/lx');
 
     lxIO.on('connection', (socket) => {
-        console.log(`LX CONNECTED! ${lxIO.sockets.length} LX sockets currently open`);
+        console.log(`LX CONNECTED! ${lxIO.sockets.size} LX sockets currently open`);
 
         socket.on('modelUpdated', (newModel) => {
             console.log('LX connection received modelUpdated: ', newModel);
@@ -26,7 +26,7 @@ const initialize = function(io) {
         });
 
         socket.on('disconnect', () => {
-            console.log(`LX server disconnected! ${lxIO.sockets.length} LX sockets currently open`);
+            console.log(`LX server disconnected! ${lxIO.sockets.size} LX sockets currently open`);
         });
     });
 
