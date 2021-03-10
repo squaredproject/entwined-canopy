@@ -1,6 +1,11 @@
 <template>
   <div>
     <div>
+      <input type="range" id="hueSet" name="hueSet"
+          min="0" max="360" v-model.number="hueSet">
+      <label for="hueSet">Hue Set</label>
+    </div>
+    <div>
       <input type="range" id="hue" name="hue"
           min="0" max="360" v-model.number="hue">
       <label for="hue">Hue Shift</label>
@@ -57,6 +62,7 @@ export default {
   data() {
     return {
       hue: 0,
+      hueSet: 0,
       saturation: 50,
       brightness: 50,
       colorCloud: 50,
@@ -85,6 +91,7 @@ export default {
   },
   watch: {
     hue: makeSettingUpdateFunction('hue'),
+    hueSet: makeSettingUpdateFunction('hueSet'),
     saturation: makeSettingUpdateFunction('saturation'),
     brightness: makeSettingUpdateFunction('brightness'),
     colorCloud: makeSettingUpdateFunction('colorCloud'),
