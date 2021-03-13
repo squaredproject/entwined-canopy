@@ -1,10 +1,10 @@
 <template>
   <div class="shrub">
-    <ShrubControlPanel :shrubId="shrubId" :sessionExpiryDate="sessionExpiryDate" v-if="state === 'active'"/>
-    <ShrubWaitingScreen :shrubId="shrubId" :estimatedWaitTime="estimatedWaitTime" v-if="state === 'waiting'"/>
-    <ShrubOfferScreen :shrubId="shrubId" :offerExpiryDate="offerExpiryDate" v-if="state === 'offered'"/>
-    <ShrubErrorScreen :shrubId="shrubId" :reason="errorReason" v-if="state === 'error'"/>
-    <p v-if="state === 'loading'">Loading shrub interactivity...</p>
+    <ShrubErrorScreen :shrubId="shrubId" :reason="errorReason" v-if="errorKey"/>
+    <ShrubControlPanel :shrubId="shrubId" :sessionExpiryDate="sessionExpiryDate" v-else-if="state === 'active'"/>
+    <ShrubWaitingScreen :shrubId="shrubId" :estimatedWaitTime="estimatedWaitTime" v-else-if="state === 'waiting'"/>
+    <ShrubOfferScreen :shrubId="shrubId" :offerExpiryDate="offerExpiryDate" v-else-if="state === 'offered'"/>
+    <p v-else-if="state === 'loading'">Loading shrub interactivity...</p>
   </div>
 </template>
 
@@ -44,24 +44,52 @@ export default {
       estimatedWaitTime: 0,
       offerExpiryDate: null,
       sessionExpiryDate: null,
-      errorReason: null
+      canopyConnected: false,
+      lxConnected: true
     };
+  },
+  computed: {
+    errorKey: function() {
+      if (!this.canopyConnected && this.state !== 'loading') {
+        return 'canopyUnreachable';
+      }
+
+      if (!this.lxConnected) {
+        return 'lxUnreachable';
+      }
+
+      return null;
+    }
   },
   sockets: {
     connect() {
       console.log('Shrub.vue socket connected');
+      this.canopyConnected = true;
+
+      // if this is a reconnection, reset state accordingly
+      if (this.state === 'disconnected') {
+        this.state = 'loading';
+      }
+
       this.$socket.client.emit('activateSession', this.shrubId);
     },
     connect_error(err) {
       console.log('Shrub.vue socket connect error: ', err);
-      this.state = 'error';
-      this.errorReason = 'canopyUnreachable';
+      this.state = 'disconnected';
+      this.canopyConnected = false;
     },
     disconnect(disconnectReason) {
       console.log(`Shrub.vue socket disconnected with reason ${disconnectReason}`);
-      this.state = 'error';
-      this.errorReason = 'canopyUnreachable';
+      this.state = 'disconnected';
+      this.canopyConnected = false;
     },
+    lxConnected() {
+      this.lxConnected = true;
+    },
+    lxDisconnected() {
+      this.lxConnected = false;
+    },
+
     sessionActivated(data) {
       if (data.shrubId !== this.shrubId) {
         console.log(`Unexpected event for shrub ${data.shrubId} (shrub ${this.shrubId} is loaded).`);

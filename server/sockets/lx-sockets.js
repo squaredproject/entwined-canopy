@@ -2,10 +2,12 @@ const sculptureState = require('../sculpture-state');
 var lXIO;
 
 const initialize = function(io) {
+    let userSockets = require('./user-sockets');
     lxIO = io.of('/lx');
 
     lxIO.on('connection', (socket) => {
         console.log(`LX CONNECTED! ${lxIO.sockets.size} LX sockets currently open`);
+        userSockets.notifyLXConnected();
 
         socket.on('modelUpdated', (newModel) => {
             console.log('LX connection received modelUpdated: ', newModel);
@@ -20,13 +22,16 @@ const initialize = function(io) {
             if (newModel.breakTimerInfo !== undefined) {
                 sculptureState.breakTimer = newModel.breakTimer;
                 // TODO: it's cleaner if the sculpture-state object does this itself
-            }
                 // by watching its own properties
                 sculptureState.emit('stateUpdated');
+            }
         });
 
         socket.on('disconnect', () => {
             console.log(`LX server disconnected! ${lxIO.sockets.size} LX sockets currently open`);
+            if(!lxIsConnected()) {
+                userSockets.notifyLXDisconnected();
+            }
         });
     });
 
@@ -53,7 +58,16 @@ const emit = function(eventName, data) {
     });
 };
 
+const lxIsConnected = function() {
+    if (!lxIO) {
+        return false;
+    }
+    
+    return (lxIO.sockets.size >= 1);
+};
+
 module.exports = {
     initialize,
-    emit
+    emit,
+    lxIsConnected
 };

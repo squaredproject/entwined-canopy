@@ -7,9 +7,10 @@ function shrubIdIsValid(shrubId) {
   return validShrubIDs.includes(shrubId);
 };
 let lxSockets = require('./lx-sockets');
+let userIO;
 
 const initialize = function(io) {
-    const userIO = io.of('/user');
+    userIO = io.of('/user');
 
     // make the sessionId property a little easier to find
     userIO.use((socket, next) => {
@@ -24,6 +25,12 @@ const initialize = function(io) {
 
         // send them the initial sculpture state so they know what's up
         socket.emit('sculptureStateUpdated', sculptureState.serialize());
+
+        if (lxSockets.lxIsConnected()) {
+            socket.emit('lxConnected');
+        } else {
+            socket.emit('lxDisconnected');
+        }
 
         // lifecycle methods
 
@@ -131,6 +138,25 @@ const initialize = function(io) {
     notifyUpdatedSculptureState();
 };
 
+const notifyLXConnected = function() {
+    if (!userIO) {
+        return;
+    }
+    userIO.sockets.forEach((socket) => {
+        socket.emit('lxConnected');
+    });
+};
+const notifyLXDisconnected = function() {
+    if (!userIO) {
+        return;
+    }
+    userIO.sockets.forEach((socket) => {
+        socket.emit('lxDisconnected');
+    });
+};
+
 module.exports = {
-    initialize
+    initialize,
+    notifyLXConnected,
+    notifyLXDisconnected
 };
