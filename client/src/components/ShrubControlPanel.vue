@@ -3,12 +3,7 @@
     <div>
       <input type="range" id="hueSet" name="hueSet"
           min="0" max="360" v-model.number="hueSet">
-      <label for="hueSet">Hue Set</label>
-    </div>
-    <div>
-      <input type="range" id="hueShift" name="hueShift"
-          min="0" max="360" v-model.number="hueShift">
-      <label for="hueShift">Hue Shift</label>
+      <label for="hueSet">Hue</label>
     </div>
     <div>
       <input type="range" id="saturation" name="saturation"
@@ -61,7 +56,6 @@ export default {
   props: ['shrubId', 'sessionExpiryDate'],
   data() {
     return {
-      hueShift: 0,
       hueSet: 0,
       saturation: 50,
       brightness: 50,
@@ -90,7 +84,6 @@ export default {
     }
   },
   watch: {
-    hueShift: makeSettingUpdateFunction('hueShift'),
     hueSet: makeSettingUpdateFunction('hueSet'),
     saturation: makeSettingUpdateFunction('saturation'),
     brightness: makeSettingUpdateFunction('brightness'),

@@ -87,7 +87,7 @@ const initialize = function(io) {
         // shrub interactivity controls
 
         socket.on('updateShrubSetting', (updateObj) => {
-            updateObj = _.pick(updateObj, ['shrubId', 'hueShift', 'hueSet', 'saturation', 'brightness', 'colorCloud']);
+            updateObj = _.pick(updateObj, ['shrubId', 'hueSet', 'saturation', 'brightness', 'colorCloud']);
 
             let shrub = getShrubByID(updateObj.shrubId);
             if (!shrub) {
