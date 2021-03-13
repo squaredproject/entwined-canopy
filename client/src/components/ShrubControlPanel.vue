@@ -2,9 +2,8 @@
   <div>
     <div class="row setting-row">
       <div class="col">
-        <input type="range" class="form-range" id="hueSet" name="hueSet"
-            min="0" max="360" v-model.number="hueSet">
-        <label for="hueSet">Hue</label>
+        <hue-slider id="huePicker" v-model="selectedColor" :swatches="[]" />
+        <label for="huePicker">Hue</label>
       </div>
       <div class="col">
         <input type="range" class="form-range" id="saturation" name="saturation"
@@ -45,6 +44,7 @@
 <script>
 // TODO: break this file into a bunch of smaller components
 import _ from 'underscore';
+import { Slider as HueSlider } from 'vue-color';
 
 let makeSettingUpdateFunction = function(key) {
   return _.throttle(function(newValue) {
@@ -64,6 +64,12 @@ export default {
       saturation: 50,
       brightness: 50,
       colorCloud: 50,
+
+      selectedColor: {
+        h: 0,
+        s: 1,
+        l: 1
+      },
 
       nowTimestamp: Date.now(),
       nowInterval: null,
@@ -106,6 +112,9 @@ export default {
       this.$router.push('/');
     }
   },
+  components: {
+    'hue-slider': HueSlider
+  }
 };
 </script>
 
@@ -117,5 +126,11 @@ export default {
   font-size: 34px;
   text-decoration: none;
   margin: 10px;
+}
+.vc-slider {
+  width: 100%;
+}
+.vc-slider-swatches {
+  display: none;
 }
 </style>
