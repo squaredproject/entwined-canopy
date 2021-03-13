@@ -2,8 +2,8 @@
   <div>
     <h1>Your spot is up!</h1>
     <p>It's your turn to control the shrub!</p>
-    <button type="button" v-on:click="acceptOffer">Start Controlling</button>
-    <button type="button" v-on:click="declineOffer">Decline Control</button>
+    <button type="button" class="btn btn-primary" v-on:click="acceptOffer">Start Controlling</button>
+    <button type="button" class="btn btn-secondary" v-on:click="declineOffer">Decline Control</button>
     <p>You have {{offerTimeRemainingString}} to start controlling before we'll move on to the next person in line.</p>
   </div>
 </template>
@@ -57,4 +57,7 @@ export default {
 </script>
 
 <style scoped>
+button {
+  margin: 10px 20px;
+}
 </style>
