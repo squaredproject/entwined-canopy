@@ -1,6 +1,6 @@
 <template>
   <div class="shrub">
-    <ShrubErrorScreen :shrubId="shrubId" :reason="errorReason" v-if="errorKey"/>
+    <ShrubErrorScreen :shrubId="shrubId" :errorKey="errorKey" v-if="errorKey"/>
     <ShrubControlPanel :shrubId="shrubId" :sessionExpiryDate="sessionExpiryDate" v-else-if="state === 'active'"/>
     <ShrubWaitingScreen :shrubId="shrubId" :estimatedWaitTime="estimatedWaitTime" v-else-if="state === 'waiting'"/>
     <ShrubOfferScreen :shrubId="shrubId" :offerExpiryDate="offerExpiryDate" v-else-if="state === 'offered'"/>
@@ -44,13 +44,12 @@ export default {
       estimatedWaitTime: 0,
       offerExpiryDate: null,
       sessionExpiryDate: null,
-      canopyConnected: false,
       lxConnected: true
     };
   },
   computed: {
     errorKey: function() {
-      if (!this.canopyConnected && this.state !== 'loading') {
+      if (!this.$socket.connected && this.state !== 'loading') {
         return 'canopyUnreachable';
       }
 
@@ -64,7 +63,6 @@ export default {
   sockets: {
     connect() {
       console.log('Shrub.vue socket connected');
-      this.canopyConnected = true;
 
       // if this is a reconnection, reset state accordingly
       if (this.state === 'disconnected') {
@@ -76,12 +74,10 @@ export default {
     connect_error(err) {
       console.log('Shrub.vue socket connect error: ', err);
       this.state = 'disconnected';
-      this.canopyConnected = false;
     },
     disconnect(disconnectReason) {
       console.log(`Shrub.vue socket disconnected with reason ${disconnectReason}`);
       this.state = 'disconnected';
-      this.canopyConnected = false;
     },
     lxConnected() {
       this.lxConnected = true;
