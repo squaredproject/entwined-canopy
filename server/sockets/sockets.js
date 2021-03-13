@@ -4,7 +4,9 @@ const io = require('socket.io')(null, {
     origin: process.env.NODE_ENV === 'production' ? config.staticSiteURLProd : config.staticSiteURLDev,
     methods: ['GET', 'POST'],
     credentials: true
-  }
+  },
+  pingInterval: 10000, // 10 seconds between ping packets
+  pingTimeout: 5000 // 5 seconds without a pong packet = disconnected
 });
 const socketAPI = {
   io,
