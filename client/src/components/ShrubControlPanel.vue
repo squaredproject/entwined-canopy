@@ -1,24 +1,28 @@
 <template>
   <div>
-    <div>
-      <input type="range" id="hueSet" name="hueSet"
-          min="0" max="360" v-model.number="hueSet">
-      <label for="hueSet">Hue</label>
+    <div class="row setting-row">
+      <div class="col">
+        <input type="range" class="form-range" id="hueSet" name="hueSet"
+            min="0" max="360" v-model.number="hueSet">
+        <label for="hueSet">Hue</label>
+      </div>
+      <div class="col">
+        <input type="range" class="form-range" id="saturation" name="saturation"
+            min="0" max="100" v-model.number="saturation">
+        <label for="saturation">Saturation</label>
+      </div>
     </div>
-    <div>
-      <input type="range" id="saturation" name="saturation"
-          min="0" max="100" v-model.number="saturation">
-      <label for="saturation">Saturation</label>
-    </div>
-    <div>
-      <input type="range" id="brightness" name="brightness"
-          min="0" max="100" v-model.number="brightness">
-      <label for="brightness">Brightness</label>
-    </div>
-    <div>
-      <input type="range" id="colorCloud" name="colorCloud"
-          min="0" max="100" v-model.number="colorCloud">
-      <label for="colorCloud">Color Cloud</label>
+    <div class="row setting-row">
+      <div class="col">
+        <input type="range" class="form-range" id="brightness" name="brightness"
+            min="0" max="100" v-model.number="brightness">
+        <label for="brightness">Brightness</label>
+      </div>
+      <div class="col">
+        <input type="range" class="form-range" id="colorCloud" name="colorCloud"
+            min="0" max="100" v-model.number="colorCloud">
+        <label for="colorCloud">Color Cloud</label>
+      </div>
     </div>
     <div class="one-shot-triggers">
       <a href="#" v-on:click="runOneShotTriggerable('lightning')">⚡️</a>
