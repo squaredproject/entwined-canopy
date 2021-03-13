@@ -231,7 +231,7 @@ class Shrub {
         if (this.offeredSession && this.offeredSession.id === sessionId) return 0;
     
         let activeWaitTime = this.activeSession ? Math.max(this.activeSession.expiryDate.getTime() - Date.now(), 0) : 0;
-        let queueWaitTime = (sessionIndex + (this.offeredSession ? 1 : 0)) * ACTIVE_SESSION_EXPIRATION_PERIOD_SECS * 1000;
+        let queueWaitTime = sessionIndex * ACTIVE_SESSION_EXPIRATION_PERIOD_SECS * 1000;
     
         // return the value in seconds
         return (activeWaitTime + queueWaitTime) / 1000;
