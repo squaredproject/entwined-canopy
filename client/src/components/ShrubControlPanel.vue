@@ -1,26 +1,22 @@
 <template>
   <div>
+    <h1 class="controller-title">Entwined Shrub Controller</h1>
     <div class="row setting-row">
       <div class="col">
         <hue-slider id="huePicker" v-model="selectedColor" :swatches="[]" />
         <label for="huePicker">Hue</label>
       </div>
+    </div>
+    <div class="row setting-row">
       <div class="col">
         <input type="range" class="form-range" id="saturation" name="saturation"
             min="0" max="100" v-model.number="saturation">
         <label for="saturation">Saturation</label>
       </div>
-    </div>
-    <div class="row setting-row">
       <div class="col">
         <input type="range" class="form-range" id="brightness" name="brightness"
             min="0" max="100" v-model.number="brightness">
         <label for="brightness">Brightness</label>
-      </div>
-      <div class="col">
-        <input type="range" class="form-range" id="colorCloud" name="colorCloud"
-            min="0" max="100" v-model.number="colorCloud">
-        <label for="colorCloud">Color Cloud</label>
       </div>
     </div>
     <div class="one-shot-triggers">
@@ -28,9 +24,6 @@
       <a href="#" v-on:click="runOneShotTriggerable('rain')">🌧</a>
       <a href="#" v-on:click="runOneShotTriggerable('bass-slam')">🚨</a>
       <a href="#" v-on:click="runOneShotTriggerable('color-burst')">🌈</a>
-    </div>
-    <div>
-      <span>{{ $socket.connected ? 'Connected' : 'Disconnected' }}</span>
     </div>
     <div>
       <span>{{sessionTimeRemainingString}} remaining in session</span>
@@ -60,15 +53,16 @@ export default {
   props: ['shrubId', 'sessionExpiryDate'],
   data() {
     return {
-      hueSet: 0,
       saturation: 50,
       brightness: 50,
       colorCloud: 50,
 
       selectedColor: {
-        h: 0,
-        s: 1,
-        l: 1
+        hsl: {
+          h: 0,
+          s: 1,
+          l: 1
+        }
       },
 
       nowTimestamp: Date.now(),
@@ -91,6 +85,9 @@ export default {
 
       let timeRemaining = Math.max(this.sessionExpiryDate.getTime() - this.nowTimestamp, 0);
       return new Date(timeRemaining).toISOString().substr(14, 5);
+    },
+    hueSet: function() {
+      return this.selectedColor.hsl.h;
     }
   },
   watch: {
@@ -119,18 +116,45 @@ export default {
 </script>
 
 <style scoped>
+.controller-title {
+  font-size: 18px;
+  margin-bottom: 40px;
+}
+
 .one-shot-triggers {
-  margin: 10px;
+  margin: 50px auto;
 }
 .one-shot-triggers a {
   font-size: 34px;
   text-decoration: none;
   margin: 10px;
 }
+.one-shot-triggers a:first-child {
+  margin-left: 2px;
+}
+.one-shot-triggers a:last-child {
+  margin-right: 2px;
+}
+
 .vc-slider {
   width: 100%;
+  padding: 15px;
 }
-.vc-slider-swatches {
+.vc-slider >>> .vc-slider-swatches {
   display: none;
+}
+
+.setting-row {
+  max-width: 600px;
+  margin: 0 auto 20px auto;
+}
+.setting-row label {
+  margin-top: -20px;
+}
+.form-range {
+  padding: 20px 0;
+}
+.vc-slider >>> .vc-hue-container {
+  padding-bottom: 30px;
 }
 </style>

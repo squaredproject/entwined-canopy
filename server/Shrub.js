@@ -144,6 +144,15 @@ class Shrub {
     _checkExpiryDates() {
         if (this.activeSession && this.activeSession.expiryDate.getTime() <= Date.now()) {
             let socket = findUserSocketBySessionID(this.activeSession.id);
+
+            // if nobody else is waiting in line, just extend the session!
+            if (socket && !this.waitingSessions.length) {
+                console.log(`Extending session for ${this.activeSession.id} on shrub ${this.id} because no other users are waiting`);
+                this.activeSession.expiryDate = generateNewSessionExpiryDate();
+                socket.emit('sessionActivated', { shrubId: this.id, expiryDate: this.activeSession.expiryDate });
+                return;
+            }
+
             if (socket) {
                 socket.emit('sessionDeactivated', this.id);
             } else {
@@ -157,6 +166,18 @@ class Shrub {
             this._offerNextSession();
         } else if (this.offeredSession && this.offeredSession.expiryDate.getTime() <= Date.now()) {
             let socket = findUserSocketBySessionID(this.offeredSession.id);
+
+            // if nobody else is waiting in line, just extend the offer!
+            if (socket && this.waitingSessions.length <= 1) {
+                console.log(`Extending offer for ${this.offeredSession.id} on shrub ${this.id} because no other users are waiting`);
+                this.offeredSession.expiryDate = generateNewOfferExpiryDate();
+                socket.emit('sessionOffered', {
+                    shrubId: this.id,
+                    offerExpiryDate: this.offeredSession.expiryDate
+                });
+                return;
+            }
+
             if (socket) {
                 socket.emit('sessionOfferRevoked', this.id);
             } else {
