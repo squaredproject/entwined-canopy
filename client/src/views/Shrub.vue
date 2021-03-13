@@ -3,6 +3,7 @@
     <ShrubControlPanel :shrubId="shrubId" :sessionExpiryDate="sessionExpiryDate" v-if="state === 'active'"/>
     <ShrubWaitingScreen :shrubId="shrubId" :estimatedWaitTime="estimatedWaitTime" v-if="state === 'waiting'"/>
     <ShrubOfferScreen :shrubId="shrubId" :offerExpiryDate="offerExpiryDate" v-if="state === 'offered'"/>
+    <ShrubErrorScreen :shrubId="shrubId" :reason="errorReason" v-if="state === 'error'"/>
     <p v-if="state === 'loading'">Loading shrub interactivity...</p>
   </div>
 </template>
@@ -12,6 +13,7 @@ import md5 from 'md5';
 import ShrubControlPanel from '../components/ShrubControlPanel.vue';
 import ShrubWaitingScreen from '../components/ShrubWaitingScreen.vue';
 import ShrubOfferScreen from '../components/ShrubOfferScreen.vue';
+import ShrubErrorScreen from '../components/ShrubErrorScreen.vue';
 import config from '../../config/config';
 
 const validShrubIDs = require('../../config/entwinedShrubs').map(function(shrubConfig) { return String(shrubConfig.id); });
@@ -41,13 +43,24 @@ export default {
       state: 'loading',
       estimatedWaitTime: 0,
       offerExpiryDate: null,
-      sessionExpiryDate: null
+      sessionExpiryDate: null,
+      errorReason: null
     };
   },
   sockets: {
     connect() {
       console.log('Shrub.vue socket connected');
       this.$socket.client.emit('activateSession', this.shrubId);
+    },
+    connect_error(err) {
+      console.log('Shrub.vue socket connect error: ', err);
+      this.state = 'error';
+      this.errorReason = 'canopyUnreachable';
+    },
+    disconnect(disconnectReason) {
+      console.log(`Shrub.vue socket disconnected with reason ${disconnectReason}`);
+      this.state = 'error';
+      this.errorReason = 'canopyUnreachable';
     },
     sessionActivated(data) {
       if (data.shrubId !== this.shrubId) {
@@ -121,6 +134,7 @@ export default {
     ShrubControlPanel,
     ShrubWaitingScreen,
     ShrubOfferScreen,
+    ShrubErrorScreen
   },
 };
 </script>

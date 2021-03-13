@@ -11,7 +11,8 @@ let userIO = io(process.env.VUE_APP_SOCKET_API_URL, {
     cb({
       sessionId: sessionId
     });
-  }
+  },
+  timeout: 10000 // 10 seconds
 });
 
 Vue.config.productionTip = false;
