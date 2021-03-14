@@ -20,10 +20,11 @@
       </div>
     </div>
     <div class="one-shot-triggers">
-      <a href="#" v-on:click="runOneShotTriggerable('lightning')">⚡️</a>
-      <a href="#" v-on:click="runOneShotTriggerable('rain')">🌧</a>
-      <a href="#" v-on:click="runOneShotTriggerable('bass-slam')">🚨</a>
-      <a href="#" v-on:click="runOneShotTriggerable('color-burst')">🌈</a>
+      <h3 class="triggerables-title">Tap to Run Special Patterns</h3>
+      <button type="button" class="btn btn-outline-primary" v-on:click="runOneShotTriggerable('lightning')">⚡️</button>
+      <button type="button" class="btn btn-outline-primary" v-on:click="runOneShotTriggerable('rain')">🌧</button>
+      <button type="button" class="btn btn-outline-primary" v-on:click="runOneShotTriggerable('bass-slam')">🚨</button>
+      <button type="button" class="btn btn-outline-primary" v-on:click="runOneShotTriggerable('color-burst')">🌈</button>
     </div>
     <div>
       <span>{{sessionTimeRemainingString}} remaining in session</span>
@@ -121,18 +122,20 @@ export default {
   margin-bottom: 40px;
 }
 
+.triggerables-title {
+  font-size: 0.9rem;
+}
 .one-shot-triggers {
   margin: 50px auto;
 }
-.one-shot-triggers a {
-  font-size: 34px;
-  text-decoration: none;
-  margin: 10px;
+.one-shot-triggers button {
+  font-size: 1.3rem;
+  margin: 4px;
 }
-.one-shot-triggers a:first-child {
+.one-shot-triggers button:first-child {
   margin-left: 2px;
 }
-.one-shot-triggers a:last-child {
+.one-shot-triggers button:last-child {
   margin-right: 2px;
 }
 
