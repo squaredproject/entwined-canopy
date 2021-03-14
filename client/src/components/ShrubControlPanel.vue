@@ -132,6 +132,12 @@ export default {
   font-size: 1.3rem;
   margin: 4px;
 }
+.one-shot-triggers button:hover {
+  background-color: inherit;
+}
+.one-shot-triggers button:active {
+  background-color: #0d6efd;
+}
 .one-shot-triggers button:first-child {
   margin-left: 2px;
 }
