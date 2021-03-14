@@ -21,10 +21,10 @@
     </div>
     <div class="one-shot-triggers">
       <h3 class="triggerables-title">Tap to Run Special Patterns</h3>
-      <button type="button" class="btn btn-outline-primary" v-on:click="runOneShotTriggerable('lightning')">⚡️</button>
-      <button type="button" class="btn btn-outline-primary" v-on:click="runOneShotTriggerable('rain')">🌧</button>
-      <button type="button" class="btn btn-outline-primary" v-on:click="runOneShotTriggerable('bass-slam')">🚨</button>
-      <button type="button" class="btn btn-outline-primary" v-on:click="runOneShotTriggerable('color-burst')">🌈</button>
+      <button type="button" class="btn btn-outline-primary" ontouchstart="" v-on:click="runOneShotTriggerable('lightning')">⚡️</button>
+      <button type="button" class="btn btn-outline-primary" ontouchstart="" v-on:click="runOneShotTriggerable('rain')">🌧</button>
+      <button type="button" class="btn btn-outline-primary" ontouchstart="" v-on:click="runOneShotTriggerable('bass-slam')">🚨</button>
+      <button type="button" class="btn btn-outline-primary" ontouchstart="" v-on:click="runOneShotTriggerable('color-burst')">🌈</button>
     </div>
     <div>
       <span>{{sessionTimeRemainingString}} remaining in session</span>
