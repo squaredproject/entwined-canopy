@@ -3,20 +3,20 @@
     <h1 class="controller-title">Entwined Shrub Controller</h1>
     <div class="row setting-row">
       <div class="col">
-        <hue-slider id="huePicker" v-model="selectedColor" :swatches="[]" />
         <label for="huePicker">Hue</label>
+        <hue-slider id="huePicker" v-model="selectedColor" :swatches="[]" />
       </div>
     </div>
     <div class="row setting-row">
       <div class="col">
+        <label for="saturation">Saturation</label>
         <input type="range" class="form-range" id="saturation" name="saturation"
             min="0" max="100" v-model.number="saturation">
-        <label for="saturation">Saturation</label>
       </div>
       <div class="col">
+        <label for="brightness">Brightness</label>
         <input type="range" class="form-range" id="brightness" name="brightness"
             min="0" max="100" v-model.number="brightness">
-        <label for="brightness">Brightness</label>
       </div>
     </div>
     <div class="one-shot-triggers">
@@ -147,7 +147,7 @@ export default {
 
 .vc-slider {
   width: 100%;
-  padding: 15px;
+  padding: 10px;
 }
 .vc-slider >>> .vc-slider-swatches {
   display: none;
@@ -173,14 +173,11 @@ export default {
 
 .setting-row {
   max-width: 600px;
-  margin: 0 auto 20px auto;
-}
-.setting-row label {
-  margin-top: -20px;
+  margin: 0 auto 30px auto;
 }
 
 .form-range {
-  padding: 20px 0;
+  padding: 25px 0;
 }
 .form-range::-webkit-slider-runnable-track {
   height: 32px;
