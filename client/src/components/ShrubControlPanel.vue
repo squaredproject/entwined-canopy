@@ -152,6 +152,24 @@ export default {
 .vc-slider >>> .vc-slider-swatches {
   display: none;
 }
+.vc-slider >>> .vc-slider-hue-warp {
+  height: 32px;
+}
+.vc-slider >>> .vc-hue-container {
+  margin: 0 14px;
+  padding-bottom: 30px;
+}
+.vc-slider >>> .vc-hue {
+  border-radius: 16px;
+}
+.vc-slider >>> .vc-hue-picker {
+  height: 32px;
+  width: 32px;
+  border-radius: 16px;
+  position: relative;
+  right: 10px;
+  top: 1px;
+}
 
 .setting-row {
   max-width: 600px;
@@ -160,10 +178,32 @@ export default {
 .setting-row label {
   margin-top: -20px;
 }
+
 .form-range {
   padding: 20px 0;
 }
-.vc-slider >>> .vc-hue-container {
-  padding-bottom: 30px;
+.form-range::-webkit-slider-runnable-track {
+  height: 32px;
+}
+.form-range::-moz-range-track {
+  height: 32px;
+} 
+.form-range::-ms-track {
+  height: 32px;
+}
+.form-range::-webkit-slider-thumb {
+  position: relative;
+  top: 3px;
+  border-radius: 32px;
+  height: 32px;
+  width: 32px;
+}
+.form-range::-moz-range-thumb {
+  height: 32px;
+  width: 32px;
+} 
+.form-range::-ms-thumb {
+  height: 32px;
+  width: 32px;
 }
 </style>
