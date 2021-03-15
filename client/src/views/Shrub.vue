@@ -62,7 +62,7 @@ export default {
   },
   sockets: {
     connect() {
-      console.log('Shrub.vue socket connected');
+      console.log('Socket connected to shrub');
 
       // if this is a reconnection, reset state accordingly
       if (this.state === 'disconnected') {
@@ -72,11 +72,11 @@ export default {
       this.$socket.client.emit('activateSession', this.shrubId);
     },
     connect_error(err) {
-      console.log('Shrub.vue socket connect error: ', err);
+      console.log('Socket connect error: ', err);
       this.state = 'disconnected';
     },
     disconnect(disconnectReason) {
-      console.log(`Shrub.vue socket disconnected with reason ${disconnectReason}`);
+      console.log(`Socket disconnected with reason ${disconnectReason}`);
       this.state = 'disconnected';
     },
     lxConnected() {
@@ -94,7 +94,7 @@ export default {
 
       this.state = 'active';
       this.sessionExpiryDate = new Date(data.expiryDate);
-      console.log('Shrub.vue session activated');
+      console.log('Session activated for shrub ' + this.shrubId);
     },
     sessionDeactivated(shrubId) {
       if (shrubId !== this.shrubId) {
@@ -104,7 +104,7 @@ export default {
 
       this.state = 'loading';
       this.$router.push('/');
-      console.log('Shrub.vue session deactivated');
+      console.log('Session deactivated for shrub ' + this.shrubId);
     },
     sessionWaiting(data) {
       if (data.shrubId !== this.shrubId) {
@@ -125,7 +125,7 @@ export default {
       this.state = 'offered';
       this.offerExpiryDate = new Date(data.offerExpiryDate);
 
-      console.log('Shrub.vue session offered');
+      console.log('Session offered for shrub ' + this.shrubId);
     },
     sessionOfferRevoked(shrubId) {
       if (shrubId !== this.shrubId) {
@@ -134,7 +134,7 @@ export default {
       }
 
       this.state = 'waiting';
-      console.log('Shrub.vue session offer revoked');
+      console.log('Session offer revoked for shrub ' + this.shrubId);
     },
     waitTimeUpdated(data) {
       if (data.shrubId !== this.shrubId) {
@@ -144,7 +144,7 @@ export default {
 
       this.state = 'waiting';
       this.estimatedWaitTime = data.estimatedWaitTime;
-      console.log('Shrub.vue wait time updated to ' + this.estimatedWaitTime);
+      console.log('Wait time updated to ' + this.estimatedWaitTime + ' for shrub ' + this.shrubId);
     }
   },
   beforeRouteEnter(to, from, next) {

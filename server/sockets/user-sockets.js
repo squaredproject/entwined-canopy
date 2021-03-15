@@ -43,7 +43,7 @@ const initialize = function(io) {
             let shrub = getShrubByID(shrubId);
 
             if (!shrub) {
-                console.log(`Can't activate session for unknown shrub ${shrubId}.`);
+                console.log(`Can't activate session ${socket.sessionId} for unknown shrub ${shrubId}.`);
                 return;
             }
 
@@ -56,7 +56,7 @@ const initialize = function(io) {
             let shrub = getShrubByID(shrubId);
 
             if (!shrub) {
-                console.log(`Can't activate session for unknown shrub ${shrubId}.`);
+                console.log(`Can't activate session ${socket.sessionId} for unknown shrub ${shrubId}.`);
                 return;
             }
 
@@ -69,7 +69,7 @@ const initialize = function(io) {
             let shrub = getShrubByID(shrubId);
 
             if (!shrub) {
-                console.log(`Can't accept offered session for unknown shrub ${shrubId}.`);
+                console.log(`Can't accept offered session ${socket.sessionId} for unknown shrub ${shrubId}.`);
                 return;
             }
 
@@ -82,7 +82,7 @@ const initialize = function(io) {
             let shrub = getShrubByID(shrubId);
 
             if (!shrub) {
-                console.log(`Can't decline offered session for unknown shrub ${shrubId}.`);
+                console.log(`Can't decline offered session ${socket.sessionId} for unknown shrub ${shrubId}.`);
                 return;
             }
 
@@ -108,7 +108,7 @@ const initialize = function(io) {
 
             // TODO enforce min/max values for each setting
 
-            console.log(`Updating shrub ${updateObj.shrubId} settings: ${JSON.stringify(_.omit(updateObj, 'shrubId'))}`);
+            console.log(`Updating shrub ${updateObj.shrubId} settings: ${JSON.stringify(_.omit(updateObj, 'shrubId'))} (session = ${socket.sessionId})`);
             lxSockets.emit('updateShrubSetting', updateObj);
         });
 
@@ -123,13 +123,14 @@ const initialize = function(io) {
                 return;
             }
 
-            console.log(`Running one shot triggerable ${updateObj.triggerableName} on shrub ${updateObj.shrubId}`)
+            console.log(`Running one shot triggerable ${updateObj.triggerableName} on shrub ${updateObj.shrubId} (session = ${socket.sessionId})`)
             lxSockets.emit('runOneShotTriggerable', _.pick(updateObj, ['shrubId', 'triggerableName']));
         });
     });
 
     // keep clients abreast of sculpture state changes
     const notifyUpdatedSculptureState = function() {
+        console.log('Notifying clients of updated sculpture state...');
         userIO.sockets.forEach((socket) => {
             socket.emit('sculptureStateUpdated', sculptureState.serialize());
         });
@@ -142,6 +143,7 @@ const notifyLXConnected = function() {
     if (!userIO) {
         return;
     }
+    console.log('Notifying clients of LX connection...');
     userIO.sockets.forEach((socket) => {
         socket.emit('lxConnected');
     });
@@ -150,6 +152,7 @@ const notifyLXDisconnected = function() {
     if (!userIO) {
         return;
     }
+    console.log('Notifying clients of LX disconnection...');
     userIO.sockets.forEach((socket) => {
         socket.emit('lxDisconnected');
     });

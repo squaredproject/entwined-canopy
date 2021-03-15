@@ -26,10 +26,10 @@ export default {
   },
   sockets: {
     connect() {
-      console.log('App.vue socket connected');
+      console.log('Socket connected!');
     },
     sculptureStateUpdated(newState) {
-      console.log('App.vue sculpture state updated to ', newState);
+      console.log('Sculpture state updated to ', newState);
       this.sculptureState = newState;
     }
   },

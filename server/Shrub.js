@@ -57,7 +57,10 @@ class Shrub {
             delete this.offeredSession;
             // only regenerate the expiry date if they're not already active
             if (!this.activeSession) {
+                console.log(`Shrub ${this.id}: activated session ${sessionId}`);
                 this.activeSession = { id: sessionId, expiryDate: generateNewSessionExpiryDate() };
+            } else {
+                console.log(`Shrub ${this.id}: reactivated session ${sessionId}`);
             }
             socket.emit('sessionActivated', { shrubId: this.id, expiryDate: this.activeSession.expiryDate });
             lxSockets.emit('interactionStarted', this.id);
@@ -72,12 +75,16 @@ class Shrub {
                 shrubId: this.id,
                 offerExpiryDate: this.offeredSession.expiryDate
             });
+            console.log(`Shrub ${this.id}: reoffered session ${sessionId}`);
             return;
         }
 
         // no duplicates in the queue!
         if (!this.waitingSessions.includes(sessionId)) {
+            console.log(`Shrub ${this.id}: placed session ${sessionId} in waiting queue`);
             this.waitingSessions.push(sessionId);
+        } else {
+            console.log(`Shrub ${this.id}: reminded session ${sessionId} of spot in waiting queue`);
         }
 
         let waitTime = this._estimatedWaitTime(sessionId);
@@ -89,7 +96,7 @@ class Shrub {
 
         // ya can't deactivate a session that's not activated
         if (!this.activeSession || this.activeSession.id !== sessionId) {
-            console.log(`Shrub ${this.id} can't deactivate session because it isn't currently active.`);
+            console.log(`Shrub ${this.id} can't deactivate session ${sessionId} because it isn't currently active.`);
             return;
         }
 
@@ -97,6 +104,8 @@ class Shrub {
 
         socket.emit('sessionDeactivated', this.id);
         lxSockets.emit('interactionStopped', this.id);
+
+        console.log(`Shrub ${this.id}: deactivated session ${sessionId} by request`);
 
         // give it to the next in line!
         this._offerNextSession();
@@ -117,6 +126,8 @@ class Shrub {
         this._removeSessionFromWaitingQueue(sessionId);
         delete this.offeredSession;
 
+        console.log(`Shrub ${this.id}: session ${sessionId} declined offer`);
+
         // give it to the next in line!
         this._offerNextSession();
     }
@@ -133,6 +144,8 @@ class Shrub {
         this._removeSessionFromWaitingQueue(sessionId);
         delete this.offeredSession;
 
+        console.log(`Shrub ${this.id}: session ${sessionId} accepted offer`);
+
         this.activeSession = { id: sessionId, expiryDate: generateNewSessionExpiryDate() };
         socket.emit('sessionActivated', { shrubId: this.id, expiryDate: this.activeSession.expiryDate });
         lxSockets.emit('interactionStarted', this.id);
@@ -147,7 +160,7 @@ class Shrub {
 
             // if nobody else is waiting in line, just extend the session!
             if (socket && !this.waitingSessions.length) {
-                console.log(`Extending session for ${this.activeSession.id} on shrub ${this.id} because no other users are waiting`);
+                console.log(`Shrub ${this.id}: extending session for ${this.activeSession.id} because no other users are waiting`);
                 this.activeSession.expiryDate = generateNewSessionExpiryDate();
                 socket.emit('sessionActivated', { shrubId: this.id, expiryDate: this.activeSession.expiryDate });
                 return;
@@ -155,8 +168,9 @@ class Shrub {
 
             if (socket) {
                 socket.emit('sessionDeactivated', this.id);
+                console.log(`Shrub ${this.id}: session ${this.activeSession.id} expired and deactivated`);
             } else {
-                console.log(`Can't find socket for ${this.activeSession.id} to send deactivation notice.`);
+                console.log(`Shrub ${this.id}: can't find socket for ${this.activeSession.id} to send expiry deactivation notice.`);
             }
             lxSockets.emit('interactionStopped', this.id);
 
@@ -169,7 +183,7 @@ class Shrub {
 
             // if nobody else is waiting in line, just extend the offer!
             if (socket && this.waitingSessions.length <= 1) {
-                console.log(`Extending offer for ${this.offeredSession.id} on shrub ${this.id} because no other users are waiting`);
+                console.log(`Shrub ${this.id}: extending offer for ${this.offeredSession.id} because no other users are waiting`);
                 this.offeredSession.expiryDate = generateNewOfferExpiryDate();
                 socket.emit('sessionOffered', {
                     shrubId: this.id,
@@ -180,8 +194,9 @@ class Shrub {
 
             if (socket) {
                 socket.emit('sessionOfferRevoked', this.id);
+                console.log(`Shrub ${this.id}: offer for session ${this.offeredSession.id} expired and revoked`);
             } else {
-                console.log(`Can't find socket for ${this.offeredSession.id} to send offer revocation notice.`);
+                console.log(`Shrub ${this.id}: can't find socket for ${this.offeredSession.id} to send offer expiry revocation notice.`);
             }
 
             // move their session to the back of the queue and keep going
@@ -207,10 +222,10 @@ class Shrub {
     }
 
     _offerNextSession() {
-        console.log('offer next session!');
+        console.log(`Shrub ${this.id}: offering next session...`);
         // if the queue's empty, we're done! nobody else is waiting.
         if (!this.waitingSessions.length) {
-            console.log('no waiting queue found, giving up');
+            console.log(`Shrub ${this.id}: no waiting sessions to offer to`);
             return;
         }
 
@@ -220,10 +235,9 @@ class Shrub {
         do {
             nextSessionUp = this.waitingSessions[0];
             socket = findUserSocketBySessionID(nextSessionUp);
-            console.log(`Found socket for ${nextSessionUp}? ${!!socket}`);
 
             if (!socket) {
-                console.log(`Can't find socket for ${nextSessionUp} to offer the next active session, removing from waiting queue.`);
+                console.log(`Shrub ${this.id}: can't find socket for ${nextSessionUp} to offer the next active session, removing from waiting queue.`);
 
                 this._removeSessionFromWaitingQueue(nextSessionUp);
             }
@@ -231,12 +245,12 @@ class Shrub {
 
         // we couldn't get anyone willing to play with us for now (i.e. no live connections int he queue)
         if (!socket) {
-            console.log('no socket found, giving up');
+            console.log(`Shrub ${this.id}: no valid socket to offer to`);
             return;
         }
 
         this.offeredSession = { id: nextSessionUp, expiryDate: generateNewOfferExpiryDate() };
-        console.log(`OFFERING SESSION TO ${this.offeredSession.id}`);
+        console.log(`Shrub ${this.id}: offering session to ${this.offeredSession.id}`);
         socket.emit('sessionOffered', {
             shrubId: this.id,
             offerExpiryDate: this.offeredSession.expiryDate

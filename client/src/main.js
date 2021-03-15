@@ -25,8 +25,6 @@ if (!sessionId) {
 }
 Vue.use(VueSocketIOExt, userIO);
 
-console.log('GOGOT SOCKET API URL ', process.env.VUE_APP_SOCKET_API_URL);
-
 new Vue({
   router,
   render: (h) => h(App)
