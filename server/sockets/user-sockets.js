@@ -47,6 +47,9 @@ const initialize = function(io) {
                 return;
             }
 
+            // track which shrubId this socket is interacting with
+            socket.shrubId = shrubId;
+
             console.log(`Activating session ${socket.sessionId} for shrub ${shrubId}.`);
 
             shrub.requestActivateSession(socket);
@@ -59,6 +62,9 @@ const initialize = function(io) {
                 console.log(`Can't activate session ${socket.sessionId} for unknown shrub ${shrubId}.`);
                 return;
             }
+
+            // track which shrubId this socket is interacting with
+            socket.shrubId = shrubId;
 
             console.log(`Deactivating session ${socket.sessionId} for shrub ${shrubId}.`);
 
@@ -73,6 +79,9 @@ const initialize = function(io) {
                 return;
             }
 
+            // track which shrubId this socket is interacting with
+            socket.shrubId = shrubId;
+
             console.log(`Accepting offered session ${socket.sessionId} for shrub ${shrubId}.`);
 
             shrub.acceptOfferedSession(socket);
@@ -85,6 +94,9 @@ const initialize = function(io) {
                 console.log(`Can't decline offered session ${socket.sessionId} for unknown shrub ${shrubId}.`);
                 return;
             }
+
+            // track which shrubId this socket is interacting with
+            socket.shrubId = shrubId;
 
             console.log(`Declining offered session ${socket.sessionId} for shrub ${shrubId}.`);
 
@@ -106,6 +118,9 @@ const initialize = function(io) {
                 return;
             }
 
+            // track which shrubId this socket is interacting with
+            socket.shrubId = shrub.id;
+
             // TODO enforce min/max values for each setting
 
             console.log(`Updating shrub ${updateObj.shrubId} settings: ${JSON.stringify(_.omit(updateObj, 'shrubId'))} (session = ${socket.sessionId})`);
@@ -122,6 +137,9 @@ const initialize = function(io) {
                 console.log(`Session ${socket.sessionId} isn't active and can't run teriggerables.`);
                 return;
             }
+
+            // track which shrubId this socket is interacting with
+            socket.shrubId = shrub.id;
 
             console.log(`Running one shot triggerable ${updateObj.triggerableName} on shrub ${updateObj.shrubId} (session = ${socket.sessionId})`)
             lxSockets.emit('runOneShotTriggerable', _.pick(updateObj, ['shrubId', 'triggerableName']));
