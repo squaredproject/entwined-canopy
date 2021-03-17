@@ -7,6 +7,7 @@
 var debug = require('debug')('entwined-canopy:server');
 var http = require('http');
 let socketAPI = require('../sockets/sockets');
+let statusAPI = require('../status-api')();
 
 /**
  * Get port from environment
@@ -18,7 +19,7 @@ var port = normalizePort(process.env.PORT || '3000');
  * Create HTTP server.
  */
 
-var server = http.createServer();
+var server = http.createServer(statusAPI);
 
 /**
  * Listen on provided port, on all network interfaces.
