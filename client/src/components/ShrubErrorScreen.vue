@@ -1,6 +1,16 @@
 <template>
   <div>
-    <div v-if="errorKey === 'canopyUnreachable'">
+    <div v-if="errorKey === 'tooBright'">
+      <h1>Come Back at Night!</h1>
+      <p>This is Entwined Meadow, an art installation by Charles Gadeken. At night, these trees and shrubs glow with beautiful and ever-changing light patterns until 9:30pm.</p>
+      <p>When the lights are on, you can scan this QR code to modify the patterns on this shrub. Come back tonight to engage with Entwined!</p>
+    </div>
+    <div v-else-if="errorKey === 'tooLate'">
+      <h1>Entwined Is Off for the Night</h1>
+      <p>Entwined turns off at 9:30pm, but earlier in the evening these trees and shrubs glow with beautiful and ever-changing light patterns.</p>
+      <p>When the lights are on, you can scan this QR code to modify the patterns on this shrub. Come back tomorrow night to engage with Entwined!</p>
+    </div>
+    <div v-else-if="errorKey === 'canopyUnreachable'">
       <h1>Network Problems</h1>
       <p>Unfortunately, the connection to Entwined isn't working. This likely means that your device doesn't have a reliable internet connection, but it could also be an issue with Entwined.</p>
       <p>Try reloading the page. If that doesn't fix it, try again in a few minutes.</p>

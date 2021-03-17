@@ -49,11 +49,25 @@ export default {
   },
   computed: {
     errorKey: function() {
+      let curDate = new Date();
+      let dateHours = curDate.getHours();
+      let dateMinutes = curDate.getMinutes();
+
+      // if it's after 8am and before 6pm, it's too bright for them to see anything on the shrub, so shut them out
+      if (dateHours > 8 && dateHours < 18) {
+        return 'tooBright'
+      }
+
       if (!this.$socket.connected && this.state !== 'loading') {
         return 'canopyUnreachable';
       }
 
       if (!this.lxConnected) {
+        // if it's after 9:30pm, the LX disconnection is because Entwined shut off for the night
+        if (dateHours >= 22 || (dateHours >= 21 && dateMinutes >= 30)) {
+          return 'tooLate';
+        }
+
         return 'lxUnreachable';
       }
 
