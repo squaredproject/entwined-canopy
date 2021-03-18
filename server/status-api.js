@@ -1,6 +1,6 @@
 const express = require('express');
 const lxSockets = require('./sockets/lx-sockets');
-const config = require('../config/config')
+const config = require('./config/config')
 
 const getAPIListener = function() {
     const app = express();
