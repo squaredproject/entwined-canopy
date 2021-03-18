@@ -49,6 +49,7 @@ const initialize = function(io) {
 
             // track which shrubId this socket is interacting with
             socket.shrubId = shrubId;
+            shrub.recordActionForSession(socket.sessionId);
 
             console.log(`Activating session ${socket.sessionId} for shrub ${shrubId}.`);
 
@@ -65,6 +66,7 @@ const initialize = function(io) {
 
             // track which shrubId this socket is interacting with
             socket.shrubId = shrubId;
+            shrub.recordActionForSession(socket.sessionId);
 
             console.log(`Deactivating session ${socket.sessionId} for shrub ${shrubId}.`);
 
@@ -81,6 +83,7 @@ const initialize = function(io) {
 
             // track which shrubId this socket is interacting with
             socket.shrubId = shrubId;
+            shrub.recordActionForSession(socket.sessionId);
 
             console.log(`Accepting offered session ${socket.sessionId} for shrub ${shrubId}.`);
 
@@ -97,6 +100,7 @@ const initialize = function(io) {
 
             // track which shrubId this socket is interacting with
             socket.shrubId = shrubId;
+            shrub.recordActionForSession(socket.sessionId);
 
             console.log(`Declining offered session ${socket.sessionId} for shrub ${shrubId}.`);
 
@@ -120,6 +124,7 @@ const initialize = function(io) {
 
             // track which shrubId this socket is interacting with
             socket.shrubId = shrub.id;
+            shrub.recordActionForSession(socket.sessionId);
 
             // TODO enforce min/max values for each setting
 
@@ -140,6 +145,7 @@ const initialize = function(io) {
 
             // track which shrubId this socket is interacting with
             socket.shrubId = shrub.id;
+            shrub.recordActionForSession(socket.sessionId);
 
             console.log(`Running one shot triggerable ${updateObj.triggerableName} on shrub ${updateObj.shrubId} (session = ${socket.sessionId})`)
             lxSockets.emit('runOneShotTriggerable', _.pick(updateObj, ['shrubId', 'triggerableName']));
@@ -162,18 +168,14 @@ const notifyLXConnected = function() {
         return;
     }
     console.log('Notifying clients of LX connection...');
-    userIO.sockets.forEach((socket) => {
-        socket.emit('lxConnected');
-    });
+    userIO.emit('lxConnected');
 };
 const notifyLXDisconnected = function() {
     if (!userIO) {
         return;
     }
     console.log('Notifying clients of LX disconnection...');
-    userIO.sockets.forEach((socket) => {
-        socket.emit('lxDisconnected');
-    });
+    userIO.emit('lxDisconnected');
 };
 
 module.exports = {

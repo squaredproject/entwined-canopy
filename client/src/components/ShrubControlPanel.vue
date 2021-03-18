@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1 class="controller-title">Entwined Shrub Controller</h1>
+    <h2 class="still-there-message" v-if="inactivityDeadline">Still there? Your session will end if you don't use the controls in the next {{inactivitySecondsRemaining}} seconds.</h2>
     <div class="row setting-row">
       <div class="col">
         <label for="huePicker">Hue</label>
@@ -43,6 +44,8 @@ let makeSettingUpdateFunction = function(key) {
       shrubId: this.shrubId,
       [key]: newValue
     });
+
+    delete this.$data.inactivityDeadline;
   }, 150);
 }
 
@@ -65,6 +68,8 @@ export default {
 
       nowTimestamp: Date.now(),
       nowInterval: null,
+
+      inactivityDeadline: null
     };
   },
   created() {
@@ -84,6 +89,14 @@ export default {
       let timeRemaining = Math.max(this.sessionExpiryDate.getTime() - this.nowTimestamp, 0);
       return new Date(timeRemaining).toISOString().substr(14, 5);
     },
+    inactivitySecondsRemaining: function() {
+      if (!this.inactivityDeadline) {
+        return '0';
+      }
+
+      let secondsRemaining = Math.max(this.inactivityDeadline - this.nowTimestamp, 0) / 1000;
+      return Math.round(secondsRemaining);
+    },
     hueSet: function() {
       return this.selectedColor.hsl.h;
     }
@@ -96,15 +109,28 @@ export default {
   },
   methods: {
     runOneShotTriggerable: function(triggerableName) {
+      delete this.$data.inactivityDeadline;
       this.$socket.client.emit('runOneShotTriggerable', {
         shrubId: this.shrubId,
         triggerableName: triggerableName
       });
     },
     stopControlling: function() {
+      delete this.$data.inactivityDeadline;
       this.$socket.client.emit('deactivateSession', this.shrubId);
       // TODO: should this happen now, or only after the server confirms?
       this.$router.push('/');
+    }
+  },
+  sockets: {
+    inactivityWarning(data) {
+      if (data.shrubId !== this.shrubId) {
+        console.log(`Unexpected event for shrub ${data.shrubId} (shrub ${this.shrubId} is loaded).`);
+        return;
+      }
+
+      this.inactivityDeadline = data.deadline;
+      console.log('Inactivity deadline updated to ' + this.inactivityDeadline + ' for shrub ' + this.shrubId);
     }
   },
   components: {
@@ -117,6 +143,11 @@ export default {
 .controller-title {
   font-size: 18px;
   margin-bottom: 40px;
+}
+.still-there-message {
+  font-size: 1rem;
+  margin-bottom: 24px;
+  color: #c50000;
 }
 
 .triggerables-title {

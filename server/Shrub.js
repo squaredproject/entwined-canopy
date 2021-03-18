@@ -6,6 +6,11 @@ let lxSockets = require('./sockets/lx-sockets');
 const OFFER_EXPIRATION_PERIOD_SECS = 15.0;
 const ACTIVE_SESSION_EXPIRATION_PERIOD_SECS = 60.0;
 
+const INACTIVITY_WARN_THRESHOLD = 15.0; // 15 seconds
+const INACTIVITY_DEACTIVATE_THRESHOLD = 30.0;// 30 seconds
+const DISCONNECTION_DEACTIVATE_THRESHOLD = 10.0; // 10 seconds
+const ACTION_CACHE_MAXAGE = 60.0; // 1 minute
+
 /* Utility / Helper Functions
  * (that don't need to be tied to the class)
  */ 
@@ -57,8 +62,11 @@ class Shrub {
         // if the ID is an int or anything else, convert to a string so it's easier to work with and match
         this.id = String(id);
         this.waitingSessions = [];
+        this.sessionLastActions = {};
 
         setInterval(this._checkExpiryDates.bind(this), 1000); // 1 second
+        setInterval(this._checkActiveSessionInactivity.bind(this), 2500); // 2.5 seconds
+        setInterval(this._purgeLastActionCache.bind(this), 60000); // 1 minute
     }
 
     /* Public Instance Methods */
@@ -167,6 +175,10 @@ class Shrub {
         this._sendUpdatedWaitTimes();
     }
 
+    recordActionForSession(sessionId) {
+        this.sessionLastActions[sessionId] = Date.now();
+    }
+
     /* Private Instance Methods */
 
     _checkExpiryDates() {
@@ -223,6 +235,33 @@ class Shrub {
         }
     }
 
+    _checkActiveSessionInactivity() {
+        if (!this.activeSession) return;
+
+        let lastAction = this.sessionLastActions[this.activeSession.id] || 0;
+        let msSinceLastAction = Date.now() - lastAction;
+        
+        // if they're over the deactivation threshold, kill their session
+        // OR if they're disconnected and over the disconnected session threshold, kill their session earlier
+        if (msSinceLastAction > (INACTIVITY_DEACTIVATE_THRESHOLD * 1000) ||
+            (msSinceLastAction > (DISCONNECTION_DEACTIVATE_THRESHOLD * 1000) && !socketConnectedForSessionOnShrub(this.activeSession.id, this.id))
+            ) {
+            console.log(`Shrub ${this.id}: ending session for ${this.activeSession.id} because it was inactive for ${Math.round(msSinceLastAction / 1000)} seconds`);
+            emitToSessionOnShrub('sessionDeactivated', this.id, this.activeSession.id, this.id);
+    
+            lxSockets.emit('interactionStopped', this.id);
+            delete this.activeSession;
+
+            // give it to the next in line!
+            this._offerNextSession();
+        } else if (msSinceLastAction > (INACTIVITY_WARN_THRESHOLD * 1000)) {
+            // otherwise, if they're past the warning threshold, let them know to do something
+            console.log(`Shrub ${this.id}: sent inactivity warning to session ${this.activeSession.id} because it was inactive for ${Math.round(msSinceLastAction / 1000)} seconds`);
+            let deadlineTimestamp = lastAction + (INACTIVITY_DEACTIVATE_THRESHOLD * 1000);
+            emitToSessionOnShrub('inactivityWarning', { shrubId: this.id, deadline: deadlineTimestamp }, this.activeSession.id, this.id);
+        }
+    }
+
     _sendUpdatedWaitTimes() {
         this.waitingSessions.forEach((sessionId) => {
             // if a session has already been offered, don't send a wait time
@@ -230,7 +269,7 @@ class Shrub {
 
             if (socketConnectedForSessionOnShrub(sessionId, this.id)) {
                 let waitTime = this._estimatedWaitTime(sessionId);
-                emitToSessionOnShrub('waitTimeUpdated', { shrubId: this.id, estimatedWaitTime: waitTime }, this.activeSession.id, this.id);
+                emitToSessionOnShrub('waitTimeUpdated', { shrubId: this.id, estimatedWaitTime: waitTime }, sessionId, this.id);
             }            
         });
     }
@@ -297,6 +336,17 @@ class Shrub {
         this.waitingSessions.push(sessionId);
     }
     
+    _purgeLastActionCache() {
+        let sessionIds = Object.keys(this.sessionLastActions);
+        sessionIds.forEach((sessionId) => {
+            let lastAction = this.sessionLastActions[sessionId];
+            // if the last action was more than the MAXAGE ago, and there's no socket connected, we don't need to remember it
+            if (Date.now() - lastAction > (ACTION_CACHE_MAXAGE * 1000) && !socketConnectedForSessionOnShrub(sessionId, this.id)) {
+                console.log('purging ' + sessionId + ' from cache');
+                delete this.sessionLastActions[sessionId];
+            }
+        });
+    }
 }
 
 // make all the shrubs
