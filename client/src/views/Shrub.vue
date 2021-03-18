@@ -63,12 +63,19 @@ export default {
       }
 
       if (!this.lxConnected) {
-        // if it's after 9:30pm, the LX disconnection is because Entwined shut off for the night
-        if (dateHours >= 22 || (dateHours >= 21 && dateMinutes >= 30)) {
-          return 'tooLate';
-        }
+        // if it's after 9:30pm or before 6am, the LX disconnection is because Entwined shut off for the night
+        let beforeDowntimeStart = (dateHours < 9 ||
+                                  (dateHours === 9 && dateMinutes < 29));
+        let afterDowntimeEnd = (dateHours > 6 ||
+                              (dateHours === 6 && dateMinutes > 1));
 
-        return 'lxUnreachable';
+        if (beforeDowntimeStart && afterDowntimeEnd) {
+            // we're not in the scheduled downtime, so it's a normal unreachable error
+            return 'lxUnreachable';
+        } else {
+            // we're in the scheduled downtime, so show a pretty error message
+            return 'tooLate';
+        }
       }
 
       return null;
