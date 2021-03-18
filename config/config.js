@@ -4,5 +4,13 @@ module.exports = {
     // TODO: should these go in a .env file instead?
     staticSiteURLDev: 'http://localhost:8080',
     staticSiteURLProd: 'https://entwined.charliestigler.com',
-    prodWebSocketAPI: 'https://entwined-api.charliestigler.com'
+
+    nightlyDowntimeStart: {
+        hours: 9,
+        minutes: 30
+    },
+    nightlyDowntimeEnd: {
+        hours: 6,
+        minutes: 0
+    }
 };
