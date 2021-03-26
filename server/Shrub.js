@@ -342,7 +342,6 @@ class Shrub {
             let lastAction = this.sessionLastActions[sessionId];
             // if the last action was more than the MAXAGE ago, and there's no socket connected, we don't need to remember it
             if (Date.now() - lastAction > (ACTION_CACHE_MAXAGE * 1000) && !socketConnectedForSessionOnShrub(sessionId, this.id)) {
-                console.log('purging ' + sessionId + ' from cache');
                 delete this.sessionLastActions[sessionId];
             }
         });
