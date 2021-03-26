@@ -168,6 +168,12 @@ export default {
       console.log('Wait time updated to ' + this.estimatedWaitTime + ' for shrub ' + this.shrubId);
     }
   },
+  mounted() {
+    this.$socket.client.connect();
+  },
+  beforeDestroy() {
+    this.$socket.client.disconnect();
+  },
   beforeRouteEnter(to, from, next) {
     if (!checkURLValidity(to)) {
       next('/');

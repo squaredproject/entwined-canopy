@@ -6,6 +6,7 @@ import router from './router'
 import { uid } from 'uid';
 
 let userIO = io(process.env.VUE_APP_SOCKET_API_URL, {
+  autoConnect: false,
   withCredentials: true,
   auth: (cb) => {
     cb({
