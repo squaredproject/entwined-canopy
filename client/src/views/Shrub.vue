@@ -49,36 +49,35 @@ export default {
   },
   computed: {
     errorKey: function() {
-      let curDate = new Date();
-      let dateHours = curDate.getHours();
-      let dateMinutes = curDate.getMinutes();
-
-      // if it's after 8am and before 6pm, it's too bright for them to see anything on the shrub, so shut them out
-      if (dateHours > 8 && dateHours < 18) {
-        return 'tooBright'
-      }
-
       if (!this.$socket.connected && this.state !== 'loading') {
         return 'canopyUnreachable';
       }
 
       if (!this.lxConnected) {
-        // if it's after 9:30pm or before 6am, the LX disconnection is because Entwined shut off for the night
-        let beforeDowntimeStart = (dateHours < 9 ||
-                                  (dateHours === 9 && dateMinutes < 29));
-        let afterDowntimeEnd = (dateHours > 6 ||
-                              (dateHours === 6 && dateMinutes > 1));
-
-        if (beforeDowntimeStart && afterDowntimeEnd) {
-            // we're not in the scheduled downtime, so it's a normal unreachable error
-            return 'lxUnreachable';
-        } else {
-            // we're in the scheduled downtime, so show a pretty error message
-            return 'tooLate';
-        }
+        return 'lxUnreachable';
       }
 
       return null;
+    }
+  },
+  watch: {
+    lxConnected: function(lxIsConnected) {
+      // if LX is connected, nothing to do here
+      if (lxIsConnected) return;
+
+      // if not and we're in scheduled downtime hours (9:30pm-6am), reroute to the full error page
+      // (no need to keep them connected since it's not coming back up in the near future)
+      let curDate = new Date();
+      let dateHours = curDate.getHours();
+      let dateMinutes = curDate.getMinutes();
+
+      let afterDowntimeStart = (dateHours > 21 ||
+                                (dateHours === 21 && dateMinutes >= 28));
+      let beforeDowntimeEnd = (dateHours < 6 ||
+                            (dateHours === 6 && dateMinutes <= 1));
+      if (afterDowntimeStart || beforeDowntimeEnd) {
+          this.$router.push('/error/tooLate');
+      }
     }
   },
   sockets: {
@@ -178,6 +177,15 @@ export default {
     if (!checkURLValidity(to)) {
       next('/');
     } else {
+      let dateHours = new Date().getHours();
+
+      // if it's after 8am and before 6pm, it's too bright for them to see anything on the shrub, so shut them out
+      // no need to even load the rest of the page and connect a session in this case
+      if (dateHours >= 8 && dateHours < 18) {
+        next('/error/tooBright');
+        return;
+      }
+
       next();
     }
   },
