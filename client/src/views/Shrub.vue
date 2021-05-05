@@ -67,17 +67,18 @@ export default {
 
       // if not and we're in scheduled downtime hours (9:30pm-6am), reroute to the full error page
       // (no need to keep them connected since it's not coming back up in the near future)
-      let curDate = new Date();
-      let dateHours = curDate.getHours();
-      let dateMinutes = curDate.getMinutes();
+      // LOVE LOCAL: no downtime (it's on 24/7) so we're commenting this out!
+      // let curDate = new Date();
+      // let dateHours = curDate.getHours();
+      // let dateMinutes = curDate.getMinutes();
 
-      let afterDowntimeStart = (dateHours > 21 ||
-                                (dateHours === 21 && dateMinutes >= 28));
-      let beforeDowntimeEnd = (dateHours < 6 ||
-                            (dateHours === 6 && dateMinutes <= 1));
-      if (afterDowntimeStart || beforeDowntimeEnd) {
-          this.$router.push('/error/tooLate');
-      }
+      // let afterDowntimeStart = (dateHours > 21 ||
+      //                           (dateHours === 21 && dateMinutes >= 28));
+      // let beforeDowntimeEnd = (dateHours < 6 ||
+      //                       (dateHours === 6 && dateMinutes <= 1));
+      // if (afterDowntimeStart || beforeDowntimeEnd) {
+      //     this.$router.push('/error/tooLate');
+      // }
     }
   },
   sockets: {
@@ -177,14 +178,15 @@ export default {
     if (!checkURLValidity(to)) {
       next('/');
     } else {
-      let dateHours = new Date().getHours();
+      // let dateHours = new Date().getHours();
 
       // if it's after 8am and before 6pm, it's too bright for them to see anything on the shrub, so shut them out
       // no need to even load the rest of the page and connect a session in this case
-      if (dateHours >= 8 && dateHours < 18) {
-        next('/error/tooBright');
-        return;
-      }
+      // DISABLING this for the Live Local festival (since it's indoors in a dark room)
+      // if (dateHours >= 8 && dateHours < 18) {
+      //   next('/error/tooBright');
+      //   return;
+      // }
 
       next();
     }

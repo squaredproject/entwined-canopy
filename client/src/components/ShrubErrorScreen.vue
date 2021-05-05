@@ -17,7 +17,7 @@
     </div>
     <div v-else-if="errorKey === 'lxUnreachable'">
       <h1>Something's Wrong</h1>
-      <p>We couldn't reach the Entwined tree to allow interaction. This is a problem on our end, not an issue with your connection.</p>
+      <p>We couldn't reach Entwined to allow interaction. This is a problem on our end, not an issue with your connection.</p>
       <p>We'll keep trying to get it working. This problem usually doesn't last longer than a couple minutes.</p>
     </div>
     <div v-else>
