@@ -6,7 +6,7 @@
     </div>
     <div v-else-if="errorKey === 'tooLate'">
         <h1>Entwined Is Off for the Night</h1>
-        <p>Entwined turns off at 9:30pm, but earlier in the evening these trees and shrubs glow with beautiful and ever-changing light patterns.</p>
+        <p>Entwined turns off at night, but earlier in the evening these trees and shrubs glow with beautiful and ever-changing light patterns.</p>
         <p>When the lights are on, you can scan this QR code to modify the patterns on this shrub. Come back tomorrow night to engage with Entwined!</p>
     </div>
     <div v-else>

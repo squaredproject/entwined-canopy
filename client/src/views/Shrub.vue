@@ -65,20 +65,21 @@ export default {
       // if LX is connected, nothing to do here
       if (lxIsConnected) return;
 
-      // if not and we're in scheduled downtime hours (9:30pm-6am), reroute to the full error page
+      // if not and we're in scheduled downtime hours, reroute to the full error page
       // (no need to keep them connected since it's not coming back up in the near future)
-      // LOVE LOCAL: no downtime (it's on 24/7) so we're commenting this out!
-      // let curDate = new Date();
-      // let dateHours = curDate.getHours();
-      // let dateMinutes = curDate.getMinutes();
+      // Love Local technically has no downtime (it's on 24/7), BUT
+      // we don't care about downtime outside of opening hours (if they decide to pull the plug etc)
+      let curDate = new Date();
+      let dateHours = curDate.getHours();
+      let dateMinutes = curDate.getMinutes();
 
-      // let afterDowntimeStart = (dateHours > 21 ||
-      //                           (dateHours === 21 && dateMinutes >= 28));
-      // let beforeDowntimeEnd = (dateHours < 6 ||
-      //                       (dateHours === 6 && dateMinutes <= 1));
-      // if (afterDowntimeStart || beforeDowntimeEnd) {
-      //     this.$router.push('/error/tooLate');
-      // }
+      let afterDowntimeStart = (dateHours > 21 ||
+                                (dateHours === 21 && dateMinutes >= 28));
+      let beforeDowntimeEnd = (dateHours < 10 ||
+                            (dateHours === 10 && dateMinutes <= 32));
+      if (afterDowntimeStart || beforeDowntimeEnd) {
+          this.$router.push('/error/tooLate');
+      }
     }
   },
   sockets: {

@@ -6,11 +6,11 @@ module.exports = {
     staticSiteURLProd: 'https://entwined.charliestigler.com',
 
     nightlyDowntimeStart: {
-        hours: 9,
+        hours: 21,
         minutes: 30
     },
     nightlyDowntimeEnd: {
-        hours: 6,
-        minutes: 0
+        hours: 10,
+        minutes: 30
     }
 };
