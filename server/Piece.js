@@ -1,5 +1,5 @@
-const shrubConfigs = require('./config/entwinedShrubs');
-let shrubs = [];
+const installationConfigs = require('./config/entwinedInstallations');
+let installations = {};
 
 let lxSockets = require('./sockets/lx-sockets');
 
@@ -16,26 +16,30 @@ const ACTION_CACHE_MAXAGE = 60.0; // 1 minute
  */ 
 
  // TODO: move this to a separate utility file
-function findUserSocketsBySessionIDForShrub(sessionId, shrubId) {
+function findUserSocketsBySessionIDForPiece(sessionId, installationId, pieceId) {
     let io = require('./sockets/sockets').io;
 
     let ret = [];
     for (var [socketId, socket] of io.of('/user').sockets) {
-        if (socket.sessionId === sessionId && socket.shrubId === shrubId) {
+        if (socket.sessionId === sessionId && socket.installationId === installationId && socket.pieceId === pieceId) {
             ret.push(socket);
         }
     }
     if (ret.length > 1) {
-        console.log(`Multiple sockets (${ret.length}) found for user session ${sessionId} and shrub ID ${shrubId}`);
+        console.log(`Multiple sockets (${ret.length}) found for user session ${sessionId}, installation ID ${installationId}, piece ID ${pieceId}`);
     }
 
     return ret;
 }
-function socketConnectedForSessionOnShrub(sessionId, shrubId) {
-    return findUserSocketsBySessionIDForShrub(sessionId, shrubId).length > 0;
+function socketConnectedForSessionOnPiece(sessionId, installationId, pieceId) {
+    return findUserSocketsBySessionIDForPiece(sessionId, installationId, pieceId).length > 0;
 }
-function emitToSessionOnShrub(eventName, dataObj, sessionId, shrubId) {
-    let sockets = findUserSocketsBySessionIDForShrub(sessionId, shrubId);
+function emitToSessionOnPiece(eventName, dataObj, sessionId, installationId, pieceId) {
+    dataObj = dataObj || {};
+    dataObj.installationId = installationId;
+    dataObj.pieceId = pieceId;
+
+    let sockets = findUserSocketsBySessionIDForPiece(sessionId, installationId, pieceId);
     if (sockets.length > 0) {
         sockets.forEach((socket) => {
             socket.emit(eventName, dataObj);
@@ -43,10 +47,14 @@ function emitToSessionOnShrub(eventName, dataObj, sessionId, shrubId) {
     }
 } 
 
-function getShrubByID(id) {
-    id = String(id);
-    return shrubs.find(function(shrub) {
-        return String(shrub.id) === id;
+function getPieceByID(installationId, pieceId) {
+    installationId = String(installationId);
+    pieceId = String(pieceId);
+
+    if (!installations[installationId]) return null;
+
+    return installations[installationId].find(function(piece) {
+        return String(piece.id) === pieceId;
     });
 }
 
@@ -57,10 +65,11 @@ function generateNewOfferExpiryDate() {
     return new Date(Date.now() + (OFFER_EXPIRATION_PERIOD_SECS * 1000));
 }
 
-class Shrub {
-    constructor(id) {
+class Piece {
+    constructor(installationId, pieceId) {
         // if the ID is an int or anything else, convert to a string so it's easier to work with and match
-        this.id = String(id);
+        this.installationId = String(installationId);
+        this.id = String(pieceId);
         this.waitingSessions = [];
         this.sessionLastActions = {};
 
@@ -80,13 +89,13 @@ class Shrub {
             delete this.offeredSession;
             // only regenerate the expiry date if they're not already active
             if (!this.activeSession) {
-                console.log(`Shrub ${this.id}: activated session ${sessionId}`);
+                console.log(`Piece ${this.id}: activated session ${sessionId}`);
                 this.activeSession = { id: sessionId, expiryDate: generateNewSessionExpiryDate() };
             } else {
-                console.log(`Shrub ${this.id}: reactivated session ${sessionId}`);
+                console.log(`Piece ${this.id}: reactivated session ${sessionId}`);
             }
-            emitToSessionOnShrub('sessionActivated', { shrubId: this.id, expiryDate: this.activeSession.expiryDate }, sessionId, this.id);
-            lxSockets.emit('interactionStarted', this.id);
+            emitToSessionOnPiece('sessionActivated', { expiryDate: this.activeSession.expiryDate }, sessionId, this.installationId, this.id);
+            lxSockets.emit('interactionStarted', null, this.installationId, this.id);
             this._sendUpdatedWaitTimes();
             return;
         }
@@ -94,24 +103,23 @@ class Shrub {
         if (this.offeredSession && this.offeredSession.id == sessionId) {
             // we already offered them a session (probably they just reloaded the page)
             // remind them...
-            emitToSessionOnShrub('sessionOffered', {
-                shrubId: this.id,
+            emitToSessionOnPiece('sessionOffered', {
                 offerExpiryDate: this.offeredSession.expiryDate
             }, sessionId, this.id);
-            console.log(`Shrub ${this.id}: reoffered session ${sessionId}`);
+            console.log(`Piece ${this.id}: reoffered session ${sessionId}`);
             return;
         }
 
         // no duplicates in the queue!
         if (!this.waitingSessions.includes(sessionId)) {
-            console.log(`Shrub ${this.id}: placed session ${sessionId} in waiting queue`);
+            console.log(`Piece ${this.id}: placed session ${sessionId} in waiting queue`);
             this.waitingSessions.push(sessionId);
         } else {
-            console.log(`Shrub ${this.id}: reminded session ${sessionId} of spot in waiting queue`);
+            console.log(`Piece ${this.id}: reminded session ${sessionId} of spot in waiting queue`);
         }
 
         let waitTime = this._estimatedWaitTime(sessionId);
-        emitToSessionOnShrub('sessionWaiting', { shrubId: this.id, estimatedWaitTime: waitTime }, sessionId, this.id);
+        emitToSessionOnPiece('sessionWaiting', { estimatedWaitTime: waitTime }, sessionId, this.installationId, this.id);
     }
 
     deactivateSession(socket) {
@@ -119,16 +127,16 @@ class Shrub {
 
         // ya can't deactivate a session that's not activated
         if (!this.activeSession || this.activeSession.id !== sessionId) {
-            console.log(`Shrub ${this.id} can't deactivate session ${sessionId} because it isn't currently active.`);
+            console.log(`Piece ${this.id} can't deactivate session ${sessionId} because it isn't currently active.`);
             return;
         }
 
         delete this.activeSession;
 
-        emitToSessionOnShrub('sessionDeactivated', this.id, sessionId, this.id);
-        lxSockets.emit('interactionStopped', this.id);
+        emitToSessionOnPiece('sessionDeactivated', null, sessionId, this.installationId, this.id);
+        lxSockets.emit('interactionStopped', null, this.installationId, this.id);
 
-        console.log(`Shrub ${this.id}: deactivated session ${sessionId} by request`);
+        console.log(`Piece ${this.id}: deactivated session ${sessionId} by request`);
 
         // give it to the next in line!
         this._offerNextSession();
@@ -139,17 +147,17 @@ class Shrub {
 
         // ya can't decline a session that's never been offered
         if (!this.offeredSession || this.offeredSession.id !== sessionId) {
-            console.log(`Shrub ${this.id} can't decline offered session because session ${sessionId} hasn't been offered.`);
+            console.log(`Piece ${this.id} can't decline offered session because session ${sessionId} hasn't been offered.`);
             return;
         }
 
-        emitToSessionOnShrub('sessionOfferRevoked', this.id, sessionId, this.id);
+        emitToSessionOnPiece('sessionOfferRevoked', null, sessionId, this.installationId, this.id);
 
         // remove the session from waiting since they don't want control (and from offered)
         this._removeSessionFromWaitingQueue(sessionId);
         delete this.offeredSession;
 
-        console.log(`Shrub ${this.id}: session ${sessionId} declined offer`);
+        console.log(`Piece ${this.id}: session ${sessionId} declined offer`);
 
         // give it to the next in line!
         this._offerNextSession();
@@ -159,7 +167,7 @@ class Shrub {
         let sessionId = socket.sessionId;
 
         if (!this.offeredSession || this.offeredSession.id !== sessionId) {
-            console.log(`Shrub ${this.id} did not offer session to ${sessionId}. Ignoring.`);
+            console.log(`Piece ${this.id} did not offer session to ${sessionId}. Ignoring.`);
             return;
         }
 
@@ -167,11 +175,11 @@ class Shrub {
         this._removeSessionFromWaitingQueue(sessionId);
         delete this.offeredSession;
 
-        console.log(`Shrub ${this.id}: session ${sessionId} accepted offer`);
+        console.log(`Piece ${this.id}: session ${sessionId} accepted offer`);
 
         this.activeSession = { id: sessionId, expiryDate: generateNewSessionExpiryDate() };
-        emitToSessionOnShrub('sessionActivated', { shrubId: this.id, expiryDate: this.activeSession.expiryDate }, sessionId, this.id);
-        lxSockets.emit('interactionStarted', this.id);
+        emitToSessionOnPiece('sessionActivated', { expiryDate: this.activeSession.expiryDate }, sessionId, this.installationId, this.id);
+        lxSockets.emit('interactionStarted', null, this.installationId, this.id);
         this._sendUpdatedWaitTimes();
     }
 
@@ -183,47 +191,46 @@ class Shrub {
 
     _checkExpiryDates() {
         if (this.activeSession && this.activeSession.expiryDate.getTime() <= Date.now()) {
-            let socketConnected = socketConnectedForSessionOnShrub(this.activeSession.id, this.id);
+            let socketConnected = socketConnectedForSessionOnPiece(this.activeSession.id, this.installationId, this.id);
 
             // if nobody else is waiting in line, just extend the session!
             if (socketConnected && !this.waitingSessions.length) {
-                console.log(`Shrub ${this.id}: extending session for ${this.activeSession.id} because no other users are waiting`);
+                console.log(`Piece ${this.id}: extending session for ${this.activeSession.id} because no other users are waiting`);
                 this.activeSession.expiryDate = generateNewSessionExpiryDate();
-                emitToSessionOnShrub('sessionActivated', { shrubId: this.id, expiryDate: this.activeSession.expiryDate }, this.activeSession.id, this.id);
+                emitToSessionOnPiece('sessionActivated', { expiryDate: this.activeSession.expiryDate }, this.activeSession.id, this.installationId, this.id);
                 return;
             }
 
             if (socketConnected) {
-                emitToSessionOnShrub('sessionDeactivated', this.id, this.activeSession.id, this.id);
-                console.log(`Shrub ${this.id}: session ${this.activeSession.id} expired and deactivated`);
+                emitToSessionOnPiece('sessionDeactivated', null, this.activeSession.id, this.installationId, this.id);
+                console.log(`Piece ${this.id}: session ${this.activeSession.id} expired and deactivated`);
             } else {
-                console.log(`Shrub ${this.id}: can't find socket for ${this.activeSession.id} to send expiry deactivation notice.`);
+                console.log(`Piece ${this.id}: can't find socket for ${this.activeSession.id} to send expiry deactivation notice.`);
             }
-            lxSockets.emit('interactionStopped', this.id);
+            lxSockets.emit('interactionStopped', null, this.installationId, this.id);
 
             delete this.activeSession;
 
             // give it to the next in line!
             this._offerNextSession();
         } else if (this.offeredSession && this.offeredSession.expiryDate.getTime() <= Date.now()) {
-            let socketConnected = socketConnectedForSessionOnShrub(this.offeredSession.id, this.id);
+            let socketConnected = socketConnectedForSessionOnPiece(this.offeredSession.id, this.installationId, this.id);
 
             // if nobody else is waiting in line, just extend the offer!
             if (socketConnected && this.waitingSessions.length <= 1) {
-                console.log(`Shrub ${this.id}: extending offer for ${this.offeredSession.id} because no other users are waiting`);
+                console.log(`Piece ${this.id}: extending offer for ${this.offeredSession.id} because no other users are waiting`);
                 this.offeredSession.expiryDate = generateNewOfferExpiryDate();
-                emitToSessionOnShrub('sessionOffered', {
-                    shrubId: this.id,
+                emitToSessionOnPiece('sessionOffered', {
                     offerExpiryDate: this.offeredSession.expiryDate
                 }, this.offeredSession.id, this.id);
                 return;
             }
 
             if (socketConnected) {
-                emitToSessionOnShrub('sessionOfferRevoked', this.id, this.offeredSession.id, this.id);
-                console.log(`Shrub ${this.id}: offer for session ${this.offeredSession.id} expired and revoked`);
+                emitToSessionOnPiece('sessionOfferRevoked', null, this.offeredSession.id, this.installationId, this.id);
+                console.log(`Piece ${this.id}: offer for session ${this.offeredSession.id} expired and revoked`);
             } else {
-                console.log(`Shrub ${this.id}: can't find socket for ${this.offeredSession.id} to send offer expiry revocation notice.`);
+                console.log(`Piece ${this.id}: can't find socket for ${this.offeredSession.id} to send offer expiry revocation notice.`);
             }
 
             // move their session to the back of the queue and keep going
@@ -244,21 +251,21 @@ class Shrub {
         // if they're over the deactivation threshold, kill their session
         // OR if they're disconnected and over the disconnected session threshold, kill their session earlier
         if (msSinceLastAction > (INACTIVITY_DEACTIVATE_THRESHOLD * 1000) ||
-            (msSinceLastAction > (DISCONNECTION_DEACTIVATE_THRESHOLD * 1000) && !socketConnectedForSessionOnShrub(this.activeSession.id, this.id))
+            (msSinceLastAction > (DISCONNECTION_DEACTIVATE_THRESHOLD * 1000) && !socketConnectedForSessionOnPiece(this.activeSession.id, this.installationId, this.id))
             ) {
-            console.log(`Shrub ${this.id}: ending session for ${this.activeSession.id} because it was inactive for ${Math.round(msSinceLastAction / 1000)} seconds`);
-            emitToSessionOnShrub('sessionDeactivated', this.id, this.activeSession.id, this.id);
+            console.log(`Piece ${this.id}: ending session for ${this.activeSession.id} because it was inactive for ${Math.round(msSinceLastAction / 1000)} seconds`);
+            emitToSessionOnPiece('sessionDeactivated', null, this.activeSession.id, this.installationId, this.id);
     
-            lxSockets.emit('interactionStopped', this.id);
+            lxSockets.emit('interactionStopped', null, this.installationId, this.id);
             delete this.activeSession;
 
             // give it to the next in line!
             this._offerNextSession();
         } else if (msSinceLastAction > (INACTIVITY_WARN_THRESHOLD * 1000)) {
             // otherwise, if they're past the warning threshold, let them know to do something
-            console.log(`Shrub ${this.id}: sent inactivity warning to session ${this.activeSession.id} because it was inactive for ${Math.round(msSinceLastAction / 1000)} seconds`);
+            console.log(`Piece ${this.id}: sent inactivity warning to session ${this.activeSession.id} because it was inactive for ${Math.round(msSinceLastAction / 1000)} seconds`);
             let deadlineTimestamp = lastAction + (INACTIVITY_DEACTIVATE_THRESHOLD * 1000);
-            emitToSessionOnShrub('inactivityWarning', { shrubId: this.id, deadline: deadlineTimestamp }, this.activeSession.id, this.id);
+            emitToSessionOnPiece('inactivityWarning', { deadline: deadlineTimestamp }, this.activeSession.id, this.installationId, this.id);
         }
     }
 
@@ -267,18 +274,18 @@ class Shrub {
             // if a session has already been offered, don't send a wait time
             if (this.offeredSession && sessionId === this.offeredSession.id) return;
 
-            if (socketConnectedForSessionOnShrub(sessionId, this.id)) {
+            if (socketConnectedForSessionOnPiece(sessionId, this.installationId, this.id)) {
                 let waitTime = this._estimatedWaitTime(sessionId);
-                emitToSessionOnShrub('waitTimeUpdated', { shrubId: this.id, estimatedWaitTime: waitTime }, sessionId, this.id);
+                emitToSessionOnPiece('waitTimeUpdated', { estimatedWaitTime: waitTime }, sessionId, this.installationId, this.id);
             }            
         });
     }
 
     _offerNextSession() {
-        console.log(`Shrub ${this.id}: offering next session...`);
+        console.log(`Piece ${this.id}: offering next session...`);
         // if the queue's empty, we're done! nobody else is waiting.
         if (!this.waitingSessions.length) {
-            console.log(`Shrub ${this.id}: no waiting sessions to offer to`);
+            console.log(`Piece ${this.id}: no waiting sessions to offer to`);
             return;
         }
 
@@ -287,10 +294,10 @@ class Shrub {
         var socketConnected;
         do {
             nextSessionUp = this.waitingSessions[0];
-            socketConnected = socketConnectedForSessionOnShrub(nextSessionUp, this.id)
+            socketConnected = socketConnectedForSessionOnPiece(nextSessionUp, this.installationId, this.id)
 
             if (!socketConnected) {
-                console.log(`Shrub ${this.id}: can't find socket for ${nextSessionUp} to offer the next active session, removing from waiting queue.`);
+                console.log(`Piece ${this.id}: can't find socket for ${nextSessionUp} to offer the next active session, removing from waiting queue.`);
 
                 this._removeSessionFromWaitingQueue(nextSessionUp);
             }
@@ -298,16 +305,15 @@ class Shrub {
 
         // we couldn't get anyone willing to play with us for now (i.e. no live connections int he queue)
         if (!socketConnected) {
-            console.log(`Shrub ${this.id}: no valid socket to offer to`);
+            console.log(`Piece ${this.id}: no valid socket to offer to`);
             return;
         }
 
         this.offeredSession = { id: nextSessionUp, expiryDate: generateNewOfferExpiryDate() };
-        console.log(`Shrub ${this.id}: offering session to ${this.offeredSession.id}`);
-        emitToSessionOnShrub('sessionOffered', {
-            shrubId: this.id,
+        console.log(`Piece ${this.id}: offering session to ${this.offeredSession.id}`);
+        emitToSessionOnPiece('sessionOffered', {
             offerExpiryDate: this.offeredSession.expiryDate
-        }, this.offeredSession.id, this.id);
+        }, this.offeredSession.id, this.installationId, this.id);
         this._sendUpdatedWaitTimes();
     }
 
@@ -341,19 +347,26 @@ class Shrub {
         sessionIds.forEach((sessionId) => {
             let lastAction = this.sessionLastActions[sessionId];
             // if the last action was more than the MAXAGE ago, and there's no socket connected, we don't need to remember it
-            if (Date.now() - lastAction > (ACTION_CACHE_MAXAGE * 1000) && !socketConnectedForSessionOnShrub(sessionId, this.id)) {
+            if (Date.now() - lastAction > (ACTION_CACHE_MAXAGE * 1000) && !socketConnectedForSessionOnPiece(sessionId, this.installationId, this.id)) {
                 delete this.sessionLastActions[sessionId];
             }
         });
     }
 }
 
-// make all the shrubs
-shrubConfigs.forEach(function(shrubConfig) {
-   shrubs.push(new Shrub(shrubConfig.id));
+// make all the pieces
+Object.keys(installationConfigs).forEach(function(installationId) {
+    installations[installationId] = [];
+
+    installationConfigs[installationId].pieces.forEach(function(pieceConfig) {
+        installations[installationId].push(new Piece(installationId, pieceConfig.id));
+    });
 });
 
 
 module.exports = {
-    getShrubByID
+    getPieceByID
 };
+
+
+

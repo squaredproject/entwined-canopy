@@ -10,8 +10,8 @@
 
 <script>
 export default {
-  name: 'ShrubOfferScreen',
-  props: ['shrubId', 'offerExpiryDate'],
+  name: 'PieceOfferScreen',
+  props: ['installationId', 'pieceId', 'offerExpiryDate'],
   data() {
     return {
       nowTimestamp: Date.now(),
@@ -45,11 +45,11 @@ export default {
   },
   methods: {
     declineOffer: function() {
-      this.$socket.client.emit('declineOfferedSession', this.shrubId);
+      this.$socket.client.emit('declineOfferedSession', this.installationId, this.pieceId);
       this.$router.push('/');
     },
     acceptOffer: function() {
-      this.$socket.client.emit('acceptOfferedSession', this.shrubId);
+      this.$socket.client.emit('acceptOfferedSession', this.installationId, this.pieceId);
       // TODO: what should happen next?
     }
   }

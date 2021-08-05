@@ -1,11 +1,7 @@
 const _ = require('underscore');
-const sculptureState = require('../sculpture-state');
 
-const validShrubIDs = require('../config/entwinedShrubs').map(function(shrubConfig) { return String(shrubConfig.id); });
-let getShrubByID = require('../Shrub').getShrubByID;
-function shrubIdIsValid(shrubId) {
-  return validShrubIDs.includes(shrubId);
-};
+let getPieceByID = require('../Piece').getPieceByID;
+
 let lxSockets = require('./lx-sockets');
 let userIO;
 
@@ -24,9 +20,9 @@ const initialize = function(io) {
         console.log(`Session ${socket.sessionId} connected`);
 
         // send them the initial sculpture state so they know what's up
-        socket.emit('sculptureStateUpdated', sculptureState.serialize());
+        // socket.emit('sculptureStateUpdated', sculptureState.serialize());
 
-        if (lxSockets.lxIsConnected()) {
+        if (lxSockets.anyLXIsConnected()) {
             socket.emit('lxConnected');
         } else {
             socket.emit('lxDisconnected');
@@ -38,144 +34,164 @@ const initialize = function(io) {
             console.log(`Session ${socket.sessionId} disconnected`);
         });
 
-        // shrub session management
-        socket.on('activateSession', (shrubId) => {
-            let shrub = getShrubByID(shrubId);
+        // piece session management
+        socket.on('activateSession', (installationId, pieceId) => {
+            let piece = getPieceByID(installationId, pieceId);
 
-            if (!shrub) {
-                console.log(`Can't activate session ${socket.sessionId} for unknown shrub ${shrubId}.`);
+            if (!piece) {
+                console.log(`Can't activate session ${socket.sessionId} for unknown piece ${pieceId}.`);
                 return;
             }
 
-            // track which shrubId this socket is interacting with
-            socket.shrubId = shrubId;
-            shrub.recordActionForSession(socket.sessionId);
+            // track which pieceId this socket is interacting with
+            socket.pieceId = pieceId;
+            socket.installationId = installationId;
+            piece.recordActionForSession(socket.sessionId);
 
-            console.log(`Activating session ${socket.sessionId} for shrub ${shrubId}.`);
+            console.log(`Activating session ${socket.sessionId} for piece ${pieceId}.`);
 
-            shrub.requestActivateSession(socket);
+            piece.requestActivateSession(socket);
         });
 
-        socket.on('deactivateSession', (shrubId) => {
-            let shrub = getShrubByID(shrubId);
+        socket.on('deactivateSession', (installationId, pieceId) => {
+            let piece = getPieceByID(installationId, pieceId);
 
-            if (!shrub) {
-                console.log(`Can't activate session ${socket.sessionId} for unknown shrub ${shrubId}.`);
+            if (!piece) {
+                console.log(`Can't activate session ${socket.sessionId} for unknown piece ${pieceId}.`);
                 return;
             }
 
-            // track which shrubId this socket is interacting with
-            socket.shrubId = shrubId;
-            shrub.recordActionForSession(socket.sessionId);
+            // track which pieceId this socket is interacting with
+            socket.pieceId = pieceId;
+            socket.installationId = installationId;
+            piece.recordActionForSession(socket.sessionId);
 
-            console.log(`Deactivating session ${socket.sessionId} for shrub ${shrubId}.`);
+            console.log(`Deactivating session ${socket.sessionId} for piece ${pieceId}.`);
 
-            shrub.deactivateSession(socket);
+            piece.deactivateSession(socket);
         });
 
-        socket.on('acceptOfferedSession', (shrubId) => {
-            let shrub = getShrubByID(shrubId);
+        socket.on('acceptOfferedSession', (installationId, pieceId) => {
+            let piece = getPieceByID(installationId, pieceId);
 
-            if (!shrub) {
-                console.log(`Can't accept offered session ${socket.sessionId} for unknown shrub ${shrubId}.`);
+            if (!piece) {
+                console.log(`Can't accept offered session ${socket.sessionId} for unknown piece ${pieceId}.`);
                 return;
             }
 
-            // track which shrubId this socket is interacting with
-            socket.shrubId = shrubId;
-            shrub.recordActionForSession(socket.sessionId);
+            // track which pieceId this socket is interacting with
+            socket.pieceId = pieceId;
+            socket.installationId = installationId;
+            piece.recordActionForSession(socket.sessionId);
 
-            console.log(`Accepting offered session ${socket.sessionId} for shrub ${shrubId}.`);
+            console.log(`Accepting offered session ${socket.sessionId} for piece ${pieceId}.`);
 
-            shrub.acceptOfferedSession(socket);
+            piece.acceptOfferedSession(socket);
         });
 
-        socket.on('declineOfferedSession', (shrubId) => {
-            let shrub = getShrubByID(shrubId);
+        socket.on('declineOfferedSession', (installationId, pieceId) => {
+            let piece = getPieceByID(installationId, pieceId);
 
-            if (!shrub) {
-                console.log(`Can't decline offered session ${socket.sessionId} for unknown shrub ${shrubId}.`);
+            if (!piece) {
+                console.log(`Can't decline offered session ${socket.sessionId} for unknown piece ${pieceId}.`);
                 return;
             }
 
-            // track which shrubId this socket is interacting with
-            socket.shrubId = shrubId;
-            shrub.recordActionForSession(socket.sessionId);
+            // track which pieceId this socket is interacting with
+            socket.pieceId = pieceId;
+            socket.installationId = installationId;
+            piece.recordActionForSession(socket.sessionId);
 
-            console.log(`Declining offered session ${socket.sessionId} for shrub ${shrubId}.`);
+            console.log(`Declining offered session ${socket.sessionId} for piece ${pieceId}.`);
 
-            shrub.declineOfferedSession(socket);
+            piece.declineOfferedSession(socket);
         });
 
-        // shrub interactivity controls
+        // piece interactivity controls
 
-        socket.on('updateShrubSetting', (updateObj) => {
-            updateObj = _.pick(updateObj, ['shrubId', 'hueSet', 'saturation', 'brightness', 'colorCloud']);
+        socket.on('updatePieceSetting', (updateObj) => {
+            updateObj = _.pick(updateObj, ['installationId', 'pieceId', 'hueSet', 'saturation', 'brightness', 'colorCloud']);
 
-            let shrub = getShrubByID(updateObj.shrubId);
-            if (!shrub) {
-                console.log('Invalid shrub ID ' + updateObj.shrubId);
+            let piece = getPieceByID(updateObj.installationId, updateObj.pieceId);
+            if (!piece) {
+                console.log('Invalid piece ID ' + updateObj.pieceId);
                 return;
             }
-            if (!shrub.activeSession || shrub.activeSession.id !== socket.sessionId) {
+            if (!piece.activeSession || piece.activeSession.id !== socket.sessionId) {
                 console.log(`Session ${socket.sessionId} isn't active and can't perform updates.`);
                 return;
             }
 
-            // track which shrubId this socket is interacting with
-            socket.shrubId = shrub.id;
-            shrub.recordActionForSession(socket.sessionId);
+            // track which pieceId this socket is interacting with
+            socket.pieceId = piece.id;
+            socket.installationId = piece.installationId;
+            piece.recordActionForSession(socket.sessionId);
 
             // TODO enforce min/max values for each setting
 
-            console.log(`Updating shrub ${updateObj.shrubId} settings: ${JSON.stringify(_.omit(updateObj, 'shrubId'))} (session = ${socket.sessionId})`);
-            lxSockets.emit('updateShrubSetting', updateObj);
+            console.log(`Updating piece ${updateObj.pieceId} settings: ${JSON.stringify(_.omit(updateObj, 'pieceId', 'installationId'))} (session = ${socket.sessionId})`);
+            lxSockets.emit('updatePieceSetting', updateObj, piece.installationId, piece.id);
         });
 
         socket.on('runOneShotTriggerable', (updateObj) => {
-            let shrub = getShrubByID(updateObj.shrubId);
-            if (!shrub) {
-                console.log('Invalid shrub ID ' + updateObj.shrubId);
+            let piece = getPieceByID(updateObj.installationId, updateObj.pieceId);
+            if (!piece) {
+                console.log('Invalid piece ID ' + updateObj.pieceId);
                 return;
             }
-            if (!shrub.activeSession || shrub.activeSession.id !== socket.sessionId) {
+            if (!piece.activeSession || piece.activeSession.id !== socket.sessionId) {
                 console.log(`Session ${socket.sessionId} isn't active and can't run teriggerables.`);
                 return;
             }
 
-            // track which shrubId this socket is interacting with
-            socket.shrubId = shrub.id;
-            shrub.recordActionForSession(socket.sessionId);
+            // track which pieceId this socket is interacting with
+            socket.pieceId = piece.id;
+            socket.installationId = piece.installationId;
+            piece.recordActionForSession(socket.sessionId);
 
-            console.log(`Running one shot triggerable ${updateObj.triggerableName} on shrub ${updateObj.shrubId} (session = ${socket.sessionId})`)
-            lxSockets.emit('runOneShotTriggerable', _.pick(updateObj, ['shrubId', 'triggerableName']));
+            console.log(`Running one shot triggerable ${updateObj.triggerableName} on piece ${updateObj.pieceId} (session = ${socket.sessionId})`)
+            lxSockets.emit('runOneShotTriggerable', _.pick(updateObj, ['installationId', 'pieceId', 'triggerableName']), piece.installationId, piece.id);
         });
     });
 
     // keep clients abreast of sculpture state changes
-    const notifyUpdatedSculptureState = function() {
-        console.log('Notifying clients of updated sculpture state...');
-        userIO.sockets.forEach((socket) => {
-            socket.emit('sculptureStateUpdated', sculptureState.serialize());
-        });
-    };
-    sculptureState.on('stateUpdated', notifyUpdatedSculptureState);    
-    notifyUpdatedSculptureState();
+    // const notifyUpdatedSculptureState = function() {
+    //     console.log('Notifying clients of updated sculpture state...');
+    //     userIO.sockets.forEach((socket) => {
+    //         socket.emit('sculptureStateUpdated', sculptureState.serialize());
+    //     });
+    // };
+    // sculptureState.on('stateUpdated', notifyUpdatedSculptureState);    
+    // notifyUpdatedSculptureState();
 };
 
-const notifyLXConnected = function() {
-    if (!userIO) {
-        return;
-    }
-    console.log('Notifying clients of LX connection...');
-    userIO.emit('lxConnected');
+const allSocketsForInstallation = function(installationId) {
+    return Array.from(userIO.sockets.values()).filter((socket) => {
+        return socket.installationId === installationId;
+    });
 };
-const notifyLXDisconnected = function() {
+
+const notifyLXConnected = function(installationId) {
     if (!userIO) {
         return;
     }
-    console.log('Notifying clients of LX disconnection...');
-    userIO.emit('lxDisconnected');
+
+    let installationSockets = allSocketsForInstallation(installationId);
+    console.log(`Notifying ${installationSockets.length} clients of LX connection...`);
+    installationSockets.forEach((socket) => {
+        socket.emit('lxConnected');
+    });
+};
+const notifyLXDisconnected = function(installationId) {
+    if (!userIO) {
+        return;
+    }
+
+    let installationSockets = allSocketsForInstallation(installationId);
+    console.log(`Notifying ${installationSockets.length} clients of LX disconnection...`);
+    installationSockets.forEach((socket) => {
+        socket.emit('lxDisconnected');
+    });
 };
 
 module.exports = {
