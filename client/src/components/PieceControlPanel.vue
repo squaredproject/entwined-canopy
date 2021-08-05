@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="controller-title">Entwined Shrub Controller</h1>
+    <h1 class="controller-title">Entwined Controller</h1>
     <h2 class="still-there-message" v-if="inactivityDeadline">Still there? Your session will end if you don't use the controls in the next {{inactivitySecondsRemaining}} seconds.</h2>
     <div class="row setting-row">
       <div class="col">
@@ -40,8 +40,9 @@ import { Slider as HueSlider } from 'vue-color';
 
 let makeSettingUpdateFunction = function(key) {
   return _.throttle(function(newValue) {
-    this.$socket.client.emit('updateShrubSetting', {
-      shrubId: this.shrubId,
+    this.$socket.client.emit('updatePieceSetting', {
+      installationId: this.installationId,
+      pieceId: this.pieceId,
       [key]: newValue
     });
 
@@ -50,8 +51,8 @@ let makeSettingUpdateFunction = function(key) {
 }
 
 export default {
-  name: 'ShrubControlPanel',
-  props: ['shrubId', 'sessionExpiryDate'],
+  name: 'PieceControlPanel',
+  props: ['installationId', 'pieceId', 'sessionExpiryDate'],
   data() {
     return {
       saturation: 50,
@@ -111,26 +112,27 @@ export default {
     runOneShotTriggerable: function(triggerableName) {
       delete this.$data.inactivityDeadline;
       this.$socket.client.emit('runOneShotTriggerable', {
-        shrubId: this.shrubId,
+        installationId: this.installationId,
+        pieceId: this.pieceId,
         triggerableName: triggerableName
       });
     },
     stopControlling: function() {
       delete this.$data.inactivityDeadline;
-      this.$socket.client.emit('deactivateSession', this.shrubId);
+      this.$socket.client.emit('deactivateSession', this.installationId, this.pieceId);
       // TODO: should this happen now, or only after the server confirms?
       this.$router.push('/');
     }
   },
   sockets: {
     inactivityWarning(data) {
-      if (data.shrubId !== this.shrubId) {
-        console.log(`Unexpected event for shrub ${data.shrubId} (shrub ${this.shrubId} is loaded).`);
+      if (data.installationId !== this.installationId || data.pieceId !== this.pieceId) {
+        console.log(`Unexpected event for piece ${data.pieceId} (piece ${this.pieceId} is loaded).`);
         return;
       }
 
       this.inactivityDeadline = data.deadline;
-      console.log('Inactivity deadline updated to ' + this.inactivityDeadline + ' for shrub ' + this.shrubId);
+      console.log('Inactivity deadline updated to ' + this.inactivityDeadline + ' for piece ' + this.pieceId);
     }
   },
   components: {
