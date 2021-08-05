@@ -1,27 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import Shrub from '../views/Shrub.vue'
+import Piece from '../views/Piece.vue'
 import ErrorScreen from '../views/ErrorScreen.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
-  {
-    // path: '/',
-    path: '*',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/shrubs/:shrubId',
-    name: 'Shrub',
-    component: Shrub,
-    props: route => ({
-      shrubId: route.params.shrubId,
-      accessKey: route.query.key
-    })
-  },
   {
     path: '/error/:errorKey',
     name: 'ErrorScreen',
@@ -29,6 +14,22 @@ const routes = [
     props: route => ({
       errorKey: route.params.errorKey
     })
+  },
+  {
+    path: '/:installationId/:pieceId',
+    name: 'Piece',
+    component: Piece,
+    props: route => ({
+      installationId: route.params.installationId,
+      pieceId: route.params.pieceId,
+      accessKey: route.query.key
+    })
+  },
+  {
+    // path: '/',
+    path: '*',
+    name: 'Home',
+    component: Home
   }
 ]
 

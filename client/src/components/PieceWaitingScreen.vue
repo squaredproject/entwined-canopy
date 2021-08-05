@@ -8,8 +8,8 @@
 
 <script>
 export default {
-  name: 'ShrubWaitingScreen',
-  props: ['shrubId', 'estimatedWaitTime'],
+  name: 'PieceWaitingScreen',
+  props: ['estimatedWaitTime'],
   computed: {
     estimatedWaitString: function() {
       if (!this.estimatedWaitTime) {
