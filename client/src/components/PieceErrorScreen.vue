@@ -30,8 +30,8 @@
 
 <script>
 export default {
-  name: 'ShrubErrorScreen',
-  props: ['shrubId', 'errorKey']
+  name: 'PieceErrorScreen',
+  props: ['errorKey']
 };
 </script>
 
