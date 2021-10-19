@@ -20,20 +20,23 @@ const getAPIListener = function() {
             // and we don't want StatusCake sending us a million monitoring emails for that
             // so we're going to fib a bit, and say things are working even if LX isn't connected
             // as long as it's between that window (with 2 min on either side for leeway)
-            let curDate = new Date();
-            let downtimeStart = config.nightlyDowntimeStart;
-            let downtimeEnd = config.nightlyDowntimeEnd;
 
-            let beforeDowntimeStart = (curDate.getHours() < downtimeStart.hours ||
-                                      (curDate.getHours() === downtimeStart.hours && curDate.getMinutes() < (downtimeStart.minutes - 2)));
-            let afterDowntimeEnd = (curDate.getHours() > downtimeEnd.hours ||
-                                   (curDate.getHours() === downtimeEnd.hours && curDate.getMinutes() > (downtimeEnd.minutes + 2)));
+            // disabled because no downtime at EDC
 
-            if (beforeDowntimeStart && afterDowntimeEnd) {
+            // let curDate = new Date();
+            // let downtimeStart = config.nightlyDowntimeStart;
+            // let downtimeEnd = config.nightlyDowntimeEnd;
+
+            // let beforeDowntimeStart = (curDate.getHours() < downtimeStart.hours ||
+            //                           (curDate.getHours() === downtimeStart.hours && curDate.getMinutes() < (downtimeStart.minutes - 2)));
+            // let afterDowntimeEnd = (curDate.getHours() > downtimeEnd.hours ||
+            //                        (curDate.getHours() === downtimeEnd.hours && curDate.getMinutes() > (downtimeEnd.minutes + 2)));
+
+            // if (beforeDowntimeStart && afterDowntimeEnd) {
                 res.status(503).send('LX is NOT connected');
-            } else {
-                res.status(203).send('LX is NOT connected, but that is expected given nightly downtime');
-            }
+            // } else {
+            //     res.status(203).send('LX is NOT connected, but that is expected given nightly downtime');
+            // }
         }
     });
 

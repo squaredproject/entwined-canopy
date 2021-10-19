@@ -67,19 +67,18 @@ export default {
 
       // if not and we're in scheduled downtime hours, reroute to the full error page
       // (no need to keep them connected since it's not coming back up in the near future)
-      // Love Local technically has no downtime (it's on 24/7), BUT
-      // we don't care about downtime outside of opening hours (if they decide to pull the plug etc)
-      let curDate = new Date();
-      let dateHours = curDate.getHours();
-      let dateMinutes = curDate.getMinutes();
+      // No downtime at EDC! 24/7 baby
+      // let curDate = new Date();
+      // let dateHours = curDate.getHours();
+      // let dateMinutes = curDate.getMinutes();
 
-      let afterDowntimeStart = (dateHours > 21 ||
-                                (dateHours === 21 && dateMinutes >= 28));
-      let beforeDowntimeEnd = (dateHours < 10 ||
-                            (dateHours === 10 && dateMinutes <= 32));
-      if (afterDowntimeStart || beforeDowntimeEnd) {
-          this.$router.push('/error/tooLate');
-      }
+      // let afterDowntimeStart = (dateHours > 21 ||
+      //                           (dateHours === 21 && dateMinutes >= 28));
+      // let beforeDowntimeEnd = (dateHours < 10 ||
+      //                       (dateHours === 10 && dateMinutes <= 32));
+      // if (afterDowntimeStart || beforeDowntimeEnd) {
+      //     this.$router.push('/error/tooLate');
+      // }
     }
   },
   sockets: {
