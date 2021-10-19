@@ -2,7 +2,7 @@
   <div>
     <div v-if="errorKey === 'tooBright'">
       <h1>Come Back at Night!</h1>
-      <p>This is Entwined Meadow, an art installation by Charles Gadeken. At night, these trees and shrubs glow with beautiful and ever-changing light patterns until 9:30pm.</p>
+      <p>This is Entwined, an art installation by Charles Gadeken. At night, these trees and shrubs glow with beautiful and ever-changing light patterns until 9:30pm.</p>
       <p>When the lights are on, you can scan this QR code to modify the patterns on this shrub. Come back tonight to engage with Entwined!</p>
     </div>
     <div v-else-if="errorKey === 'tooLate'">
