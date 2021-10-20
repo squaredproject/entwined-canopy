@@ -178,15 +178,14 @@ export default {
     if (!checkURLValidity(to)) {
       next('/');
     } else {
-      // let dateHours = new Date().getHours();
+      let dateHours = new Date().getHours();
 
-      // if it's after 8am and before 6pm, it's too bright for them to see anything on the shrub, so shut them out
+      // if it's after 8am and before 5pm, it's too bright for them to see anything on the shrub, so shut them out
       // no need to even load the rest of the page and connect a session in this case
-      // DISABLING this for the Live Local festival (since it's indoors in a dark room)
-      // if (dateHours >= 8 && dateHours < 18) {
-      //   next('/error/tooBright');
-      //   return;
-      // }
+      if (dateHours >= 8 && dateHours < 17) {
+        next('/error/tooBright');
+        return;
+      }
 
       next();
     }
