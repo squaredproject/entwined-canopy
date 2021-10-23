@@ -6,7 +6,7 @@ const initialize = function(io) {
     lxIO = io.of('/lx');
 
     lxIO.on('connection', (socket) => {
-        console.log(`LX CONNECTED! Client IP ${socket.handshake.address} (${lxIO.sockets.size} LX sockets currently open)`);
+        console.log(`LX CONNECTED! Client IP ${socket.request.connection.remoteAddress} (${lxIO.sockets.size} LX sockets currently open)`);
         userSockets.notifyLXConnected();
 
         socket.on('modelUpdated', (newModel) => {
@@ -28,7 +28,7 @@ const initialize = function(io) {
         });
 
         socket.on('disconnect', () => {
-            console.log(`LX server disconnected! Client IP ${socket.handshake.address} (${lxIO.sockets.size} LX sockets currently open)`);
+            console.log(`LX server disconnected! Client IP ${socket.request.connection.remoteAddress} (${lxIO.sockets.size} LX sockets currently open)`);
             if(!lxIsConnected()) {
                 userSockets.notifyLXDisconnected();
             }
