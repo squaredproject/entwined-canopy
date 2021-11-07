@@ -112,7 +112,7 @@ const initialize = function(io) {
         // piece interactivity controls
 
         socket.on('updatePieceSetting', (updateObj) => {
-            updateObj = _.pick(updateObj, ['installationId', 'pieceId', 'hueSet', 'saturation', 'brightness', 'colorCloud']);
+            updateObj = _.pick(updateObj, ['installationId', 'pieceId', 'hueSet', 'saturation', 'brightness']);
 
             let piece = getPieceByID(updateObj.installationId, updateObj.pieceId);
             if (!piece) {
@@ -128,8 +128,6 @@ const initialize = function(io) {
             socket.pieceId = piece.id;
             socket.installationId = piece.installationId;
             piece.recordActionForSession(socket.sessionId);
-
-            // TODO enforce min/max values for each setting
 
             console.log(`Updating piece ${updateObj.pieceId} settings: ${JSON.stringify(_.omit(updateObj, 'pieceId', 'installationId'))} (session = ${socket.sessionId})`);
 
@@ -160,6 +158,34 @@ const initialize = function(io) {
 
             console.log(`Running one shot triggerable ${updateObj.triggerableName} on piece ${updateObj.pieceId} (session = ${socket.sessionId})`)
             lxSockets.emit('runOneShotTriggerable', _.pick(updateObj, ['installationId', 'pieceId', 'triggerableName']), piece.installationId, piece.id);
+        });
+
+        socket.on('resetPieceSettings', (updateObj) => {
+            updateObj = _.pick(updateObj, ['installationId', 'pieceId']);
+
+            let piece = getPieceByID(updateObj.installationId, updateObj.pieceId);
+            if (!piece) {
+                console.log('Invalid piece ID ' + updateObj.pieceId);
+                return;
+            }
+            if (!piece.activeSession || piece.activeSession.id !== socket.sessionId) {
+                console.log(`Session ${socket.sessionId} isn't active and can't perform updates.`);
+                return;
+            }
+
+            // track which pieceId this socket is interacting with
+            socket.pieceId = piece.id;
+            socket.installationId = piece.installationId;
+            piece.recordActionForSession(socket.sessionId);
+
+            // TODO enforce min/max values for each setting
+
+            console.log(`Resetting piece ${updateObj.pieceId} settings`);
+
+            // this won't work on the Scottsdale installation since it's an old LX version
+            if (piece.installationId !== 'shrubs') {
+                lxSockets.emit('resetPieceSettings', null, piece.installationId, piece.id);
+            }
         });
     });
 
