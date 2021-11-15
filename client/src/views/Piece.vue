@@ -194,16 +194,17 @@ export default {
     if (!checkURLValidity(to)) {
       next('/');
     } else {
-      let dateHours = new Date().getHours();
+      // DISABLED tooBright check
+      // let dateHours = new Date().getHours();
 
-      let tooBrightHours = installations[to.params.installationId].tooBrightHours;
+      // let tooBrightHours = installations[to.params.installationId].tooBrightHours;
 
       // if it's too bright for them to see anything on the piece, shut them out
       // no need to even load the rest of the page and connect a session in this case
-      if (tooBrightHours && dateHours >= tooBrightHours.start && dateHours <= tooBrightHours.end) {
-        next('/error/tooBright');
-        return;
-      }
+      // if (tooBrightHours && dateHours >= tooBrightHours.start && dateHours <= tooBrightHours.end) {
+      //   next('/error/tooBright');
+      //   return;
+      // }
 
       next();
     }

@@ -35,15 +35,9 @@ const getAPIListener = function() {
                                     (curDate.getHours() === downtimeEnd.hours && curDate.getMinutes() > (downtimeEnd.minutes + 2)));
 
                 inDowntime = !(beforeDowntimeStart && afterDowntimeEnd);
-            // let downtimeStart = config.nightlyDowntimeStart;
             }
 
             if (!inDowntime) {
-            //                           (curDate.getHours() === downtimeStart.hours && curDate.getMinutes() < (downtimeStart.minutes - 2)));
-            // let afterDowntimeEnd = (curDate.getHours() > downtimeEnd.hours ||
-            //                        (curDate.getHours() === downtimeEnd.hours && curDate.getMinutes() > (downtimeEnd.minutes + 2)));
-
-            // if (beforeDowntimeStart && afterDowntimeEnd) {
                 res.status(503).send(`LX is NOT connected for installation ${installationId}`);
             } else {
                 res.status(203).send(`LX is NOT connected for installation ${installationId}, but that is expected given nightly downtime`);
