@@ -116,5 +116,29 @@
 					"x" : 1389.6,
 					"z" : 354.2
 			}]
+	},
+	"950arnold": {
+		"nightlyDowntime": {
+			"start": {
+				"hours": 0,
+				"minutes": 0
+			},
+			"end": {
+				"hours": 20,
+				"minutes": 45
+			}
+		},
+		"tooBrightHours": {
+			"start": 8,
+			"end": 14
+		},
+		"pieces": [
+			{
+					"id": "yard",
+					"ry" : 0,
+					"x" : 0,
+					"z" : 0
+			}
+		]
 	}
 }
