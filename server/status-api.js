@@ -1,7 +1,7 @@
 const express = require('express');
 const lxSockets = require('./sockets/lx-sockets');
 const config = require('./config/config')
-const installations = require('../config/entwinedInstallations');
+const installations = require('./config/entwinedInstallations');
 
 const getAPIListener = function() {
     const app = express();
