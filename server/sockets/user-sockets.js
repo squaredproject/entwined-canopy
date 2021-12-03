@@ -22,6 +22,8 @@ const initialize = function(io) {
         // send them the initial sculpture state so they know what's up
         // socket.emit('sculptureStateUpdated', sculptureState.serialize());
 
+        // TODO: should only emit this for the appropriate installation ID only,
+        // or include installation ID on the events so the client can filter.
         if (lxSockets.anyLXIsConnected()) {
             socket.emit('lxConnected');
         } else {
