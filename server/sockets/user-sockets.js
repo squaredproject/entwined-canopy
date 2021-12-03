@@ -130,7 +130,14 @@ const initialize = function(io) {
             // TODO enforce min/max values for each setting
 
             console.log(`Updating piece ${updateObj.pieceId} settings: ${JSON.stringify(_.omit(updateObj, 'pieceId', 'installationId'))} (session = ${socket.sessionId})`);
-            lxSockets.emit('updatePieceSetting', updateObj, piece.installationId, piece.id);
+
+            // Scottsdale installation needs this for backwards-compat since it's on an old LX version before this was renamed
+            // TODO: remove after Scottsdale installation ends
+            if (piece.installationId === 'shrubs') {
+                lxSockets.emit('updateShrubSetting', updateObj, piece.installationId, piece.id);
+            } else {
+                lxSockets.emit('updatePieceSetting', updateObj, piece.installationId, piece.id);
+            }
         });
 
         socket.on('runOneShotTriggerable', (updateObj) => {

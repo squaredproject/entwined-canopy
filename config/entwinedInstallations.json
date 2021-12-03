@@ -1,18 +1,18 @@
 {
-	"ggp": {
+	"shrubs": {
 		"nightlyDowntime": {
 			"start": {
-				"hours": 21,
-				"minutes": 30
+				"hours": 22,
+				"minutes": 0
 			},
 			"end": {
-				"hours": 10,
-				"minutes": 30
+				"hours": 9,
+				"minutes": 0
 			}
 		},
 		"tooBrightHours": {
 			"start": 8,
-			"end": 18
+			"end": 17
 		},
 		"pieces": [
 			{

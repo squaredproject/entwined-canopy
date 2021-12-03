@@ -37,8 +37,10 @@ function checkURLValidity(route) {
     return false;
   }
 
+  // we normally check for keys, but for legacy reasons, we don't do this on the "shrubs"
+  // installation (which is the Scottsdale installation using legacy QR codes with different keys)
   let correctKey = md5(installationId + pieceId + config.sculptureKeySalt);
-  if (correctKey !== accessKey) {
+  if (correctKey !== accessKey && installationId !== 'shrubs') {
     console.log(`Access key ${accessKey} is incorrect.`);
     return false;
   }

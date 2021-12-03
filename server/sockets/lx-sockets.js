@@ -11,18 +11,23 @@ const initialize = function(io) {
         socket.on('modelUpdated', (newModel) => {
             console.log('LX connection received modelUpdated: ', newModel);
 
-            if (!newModel.installationId) {
-                console.log('ERROR: LX connection did not send installation ID in modelUpdated');
+            let installationId = newModel.installationId;
+
+            if (!installationId) {
+                // Scottsdale is running an old version of LX that doesn't send the installation ID,
+                // so for now we assume anything without an installation ID is Scottsdale (aka shrubs)
+                // after Scottsdale closes, this should become an error that kills the connection
+                console.log('WARNING: LX connection did not send installation ID in modelUpdated, using default installation ID shrubs');
+                installationId = 'shrubs';
+            }
+
+            if (!installations[installationId]) {
+                console.log('ERROR: LX connection sent invalid installation ID ' + installationId);
                 return;
             }
 
-            if (!installations[newModel.installationId]) {
-                console.log('ERROR: LX connection sent invalid installation ID ' + newModel.installationId);
-                return;
-            }
-
-            socket.installationId = newModel.installationId;
-            userSockets.notifyLXConnected(newModel.installationId);
+            socket.installationId = installationId;
+            userSockets.notifyLXConnected(installationId);
 
             // for now, we ignore interactivityEnabled and breakTimerInfo, even though they're sent in the model
 
@@ -54,6 +59,9 @@ const emit = function(eventName, data, installationId, pieceId) {
     data = data || {};
     data.installationId = installationId;
     data.pieceId = pieceId;
+
+    // for backwards-compatibility, remove this after Scottsdale installation shuts down and it's no longer needed
+    data.shrubId = pieceId;
 
     console.log(`LX connection sending: ${eventName}(${JSON.stringify(data)})`);
 
