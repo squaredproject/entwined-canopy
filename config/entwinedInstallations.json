@@ -2,11 +2,6 @@
 	"ggp": {
 		"pieces": [
 			{
-				"type" : "king",
-				"cubeSizeIndex": 0,
-				"id" : "king-1"
-			},
-			{
 				"type" : "classic",
 				"cubeSizeIndex": 1,
 				"id" : "shrub-11"
@@ -20,11 +15,6 @@
 				"type" : "classic",
 				"cubeSizeIndex": 0,
 				"id" : "shrub-13"
-			},
-			{
-				"type" : "king",
-				"cubeSizeIndex": 0,
-				"id" : "king-2"
 			},
 			{
 				"type" : "classic",
@@ -42,11 +32,6 @@
 				"id" : "shrub-23"
 			},
 			{
-				"type" : "king",
-				"cubeSizeIndex": 0,
-				"id" : "king-3"
-			},
-			{
 				"type" : "classic",
 				"cubeSizeIndex": 1,
 				"id" : "shrub-31"
@@ -62,19 +47,78 @@
 				"id" : "shrub-33"
 			},
 			{
-				"radius" : 180,
+				"type" : "king",
+				"cubeSizeIndex": 0,
+				"id" : "king-1"
+			},
+			{
+				"type" : "king",
+				"cubeSizeIndex": 0,
+				"id" : "king-2"
+			},
+			{
+				"type" : "king",
+				"cubeSizeIndex": 0,
+				"id" : "king-3"
+			},
+			{
+				"type": "fairy-circle",
 				"id" : "circle-1",
 				"cubeSizeIndex" : 0
 			},
 			{
-				"radius" : 240,
+				"type": "fairy-circle",
 				"id" : "circle-2",
 				"cubeSizeIndex" : 0
 			},
 			{
-				"radius" : 300,
+				"type": "fairy-circle",
 				"cubeSizeIndex" : 0,
 				"id" : "circle-3"
+			},
+			{
+				"type": "tree",
+				"id": "tree-medium"
+			},
+			{
+				"type": "tree",
+				"id": "tree-small"
+			},
+			{
+				"type": "sapling",
+				"id" : "sapling-01"
+			},
+			{
+				"type": "sapling",
+				"id" : "sapling-02"
+			},
+			{
+				"type": "sapling",
+				"id" : "sapling-03"
+			},
+			{
+				"type": "sapling",
+				"id" : "sapling-04"
+			},
+			{
+				"type": "sapling",
+				"id" : "sapling-05"
+			},
+			{
+				"type": "sapling",
+				"id" : "sapling-06"
+			},
+			{
+				"type": "sapling",
+				"id" : "sapling-07"
+			},
+			{
+				"type": "sapling",
+				"id" : "sapling-08"
+			},
+			{
+				"type": "sapling",
+				"id" : "sapling-9"
 			}
 		]
 	},
