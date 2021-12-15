@@ -2,139 +2,79 @@
 	"ggp": {
 		"pieces": [
 			{
-				"ry" : 130,
-				"x" : -315,
-				"z" : -1491,
 				"type" : "king",
 				"cubeSizeIndex": 0,
-				"id" : "king-1",
-				"shrubIpAddress" : "10.0.0.120"
+				"id" : "king-1"
 			},
 			{
-				"ry" : 170,
-				"x" : -35,
-				"z" : -1622,
 				"type" : "classic",
 				"cubeSizeIndex": 1,
-				"id" : "shrub-11",
-				"shrubIpAddress" : "10.0.0.109"
+				"id" : "shrub-11"
 			},
 			{
-				"ry" : 130,
-				"x" : -491,
-				"z" : -1631,
 				"type" : "classic",
 				"cubeSizeIndex": 0,
-				"id" : "shrub-12",
-				"shrubIpAddress" : "10.0.0.114"
+				"id" : "shrub-12"
 			},
 			{
-				"ry" : 130,
-				"x" : -473,
-				"z" : -1193,
 				"type" : "classic",
 				"cubeSizeIndex": 0,
-				"id" : "shrub-13",
-				"shrubIpAddress" : "10.0.0.113"
+				"id" : "shrub-13"
 			},
 			{
-				"ry" : 130,
-				"x" : 719,
-				"z" : -350,
 				"type" : "king",
 				"cubeSizeIndex": 0,
-				"id" : "king-2",
-				"shrubIpAddress" : "10.0.0.118"
+				"id" : "king-2"
 			},
 			{
-				"ry" : 130,
-				"x" : 1017,
-				"z" : -395,
 				"type" : "classic",
 				"cubeSizeIndex": 1,
-				"id" : "shrub-21",
-				"shrubIpAddress" : "10.0.0.214"
+				"id" : "shrub-21"
 			},
 			{
-				"ry" : 180,
-				"x" : 587,
-				"z" : -658,
 				"type" : "classic",
 				"cubeSizeIndex": 0,
-				"id" : "shrub-22",
-				"shrubIpAddress" : "10.0.0.112"
+				"id" : "shrub-22"
 			},
 			{
-				"ry" : 180,
-				"x" : 315,
-				"z" : -517,
 				"type" : "classic",
 				"cubeSizeIndex": 0,
-				"id" : "shrub-23",
-				"shrubIpAddress" : "10.0.0.115"
+				"id" : "shrub-23"
 			},
 			{
-				"ry" : 300,
-				"x" : 1000,
-				"z" : 280,
 				"type" : "king",
 				"cubeSizeIndex": 0,
-				"id" : "king-3",
-				"shrubIpAddress" : "10.0.0.116"
+				"id" : "king-3"
 			},
 			{
-				"ry" : 270,
-				"x" : 1052,
-				"z" : 526,
 				"type" : "classic",
 				"cubeSizeIndex": 1,
-				"id" : "shrub-31",
-				"shrubIpAddress" : "10.0.0.111"
+				"id" : "shrub-31"
 			},
 			{
-				"ry" : 330,
-				"x" : 965,
-				"z" : -70,
 				"type" : "classic",
 				"cubeSizeIndex": 0,
-				"id" : "shrub-32",
-				"shrubIpAddress" : "10.0.0.119"
+				"id" : "shrub-32"
 			},
 			{
-				"ry" : 0,
-				"x" : 772,
-				"z" : 368,
 				"type" : "classic",
 				"cubeSizeIndex": 0,
-				"id" : "shrub-33",
-				"shrubIpAddress" : "10.0.0.117"
+				"id" : "shrub-33"
 			},
 			{
-				"ry" : 40,
-				"x" : 333,
-				"z" : -1447,
 				"radius" : 180,
 				"id" : "circle-1",
-				"cubeSizeIndex" : 0,
-				"ipAddresses" : ["10.0.0.140", "10.0.0.141"]
+				"cubeSizeIndex" : 0
 			},
 			{
-				"ry" : 340,
-				"x" : -368,
-				"z" : -491,
 				"radius" : 240,
 				"id" : "circle-2",
-				"cubeSizeIndex" : 0,
-				"ipAddresses" : ["10.0.0.142", "10.0.0.143"]
+				"cubeSizeIndex" : 0
 			},
 			{
-				"ry" : -160,
-				"x" : 1561,
-				"z" : 649,
 				"radius" : 300,
 				"cubeSizeIndex" : 0,
-				"id" : "circle-3",
-				"ipAddresses" : ["10.0.0.145", "10.0.0.146","10.0.0.147", "10.0.0.144"]
+				"id" : "circle-3"
 			}
 		]
 	},
@@ -274,9 +214,30 @@
 		"pieces": [
 			{
 					"id": "yard",
-					"ry" : 0,
-					"x" : 0,
-					"z" : 0
+					"type" : "classic"
+			}
+		]
+	},
+	"reno-red": {
+		"pieces": [
+			{
+				"id": "front",
+				"type" : "classic"
+			},
+			{
+				"id": "middle",
+				"type" : "classic"
+			},
+			{
+				"id": "rear",
+				"type" : "classic"
+			}
+		]
+	},
+	"marin-home": {
+		"pieces": [
+			{
+				"id": "shrub"
 			}
 		]
 	}
