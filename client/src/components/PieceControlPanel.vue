@@ -188,7 +188,7 @@ export default {
             if (features.rms < RMS_CONTROL_THRESHOLD) {
               // if they're inactive (i.e. not putting in real audio input) for a bit, end the mic control
               if (Date.now() - this.lastAudioInputTimestamp > AUDIO_CONTROL_TIMEOUT_MS) {
-                console.log('Audio inactive for 3 seconds, stopping!');
+                console.log('Audio inactive for 5 seconds, stopping!');
                 this.stopAudioControl();
               }
 
