@@ -167,8 +167,8 @@ export default {
       // below this level of RMS (volume), assume the user has given up on controlling with their voice
       const RMS_CONTROL_THRESHOLD = 0.01;
 
-      // after 3 seconds, stop audio control
-      const AUDIO_CONTROL_TIMEOUT_MS = 3000;
+      // after 5 seconds, stop audio control
+      const AUDIO_CONTROL_TIMEOUT_MS = 5000;
 
       const handleSuccess = (stream) => {
         this.audioControlEnabled = true;
@@ -186,7 +186,7 @@ export default {
           featureExtractors: ["rms", "chroma"],
           callback: (features) => {
             if (features.rms < RMS_CONTROL_THRESHOLD) {
-              // if they're inactive (i.e. not putting in real audio input) for 3 seconds, end the mic control
+              // if they're inactive (i.e. not putting in real audio input) for a bit, end the mic control
               if (Date.now() - this.lastAudioInputTimestamp > AUDIO_CONTROL_TIMEOUT_MS) {
                 console.log('Audio inactive for 3 seconds, stopping!');
                 this.stopAudioControl();
