@@ -1,5 +1,9 @@
 {
 	"ggp": {
+		"tooBrightHours": {
+			"start": 8,
+			"end": 16
+		},
 		"pieces": [
 			{
 				"type" : "classic",
