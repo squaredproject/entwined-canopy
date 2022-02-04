@@ -2,34 +2,37 @@
   <div>
     <h1 class="controller-title">Entwined Controller</h1>
     <h2 class="still-there-message" v-if="inactivityDeadline">Still there? Your session will end if you don't use the controls in the next {{inactivitySecondsRemaining}} seconds.</h2>
-    <div class="row setting-row">
+    <div class="row setting-row" v-if="audioControlAvailable && (pieceConfig.allControls || pieceConfig.type === 'fairy-circle')">
       <div class="col">
         <button type="button" class="mic-button mic-button-start" v-on:click="startAudioControl()" v-if="audioControlAvailable && !audioControlEnabled" aria-label="Start Microphone Control"></button>
         <button type="button" class="mic-button mic-button-stop" v-on:click="stopAudioControl()" v-if="audioControlAvailable && audioControlEnabled" aria-label="Stop Microphone Control"></button>
         <p class="sing-instructions" v-if="audioControlEnabled">Sing into your microphone to make the magic happen!</p>
+        <p class="sing-instructions" v-if="audioControlEnabled">Hint: singing works better than speaking.</p>
         <p class="audio-error" v-if="audioControlError">Something went wrong accessing your microphone.</p>
       </div>
     </div>
     <span class="main-settings" v-if="!audioControlEnabled">
-      <div class="row setting-row">
-        <div class="col">
-          <label for="huePicker">Hue</label>
-          <hue-slider id="huePicker" v-model="selectedColor" :swatches="[]" />
+      <span v-if="pieceConfig.allControls || pieceConfig.type === 'classic' || pieceConfig.type === 'sapling' || (pieceConfig.type === 'fairy-circle' && !audioControlAvailable)">
+        <div class="row setting-row">
+          <div class="col">
+            <label for="huePicker">Hue</label>
+            <hue-slider id="huePicker" v-model="selectedColor" :swatches="[]" />
+          </div>
         </div>
-      </div>
-      <div class="row setting-row">
-        <div class="col">
-          <label for="saturation">Saturation</label>
-          <input type="range" class="form-range" id="saturation" name="saturation"
-              min="0" max="100" v-model.number="saturation">
+        <div class="row setting-row">
+          <div class="col">
+            <label for="saturation">Saturation</label>
+            <input type="range" class="form-range" id="saturation" name="saturation"
+                min="0" max="100" v-model.number="saturation">
+          </div>
+          <div class="col">
+            <label for="brightness">Brightness</label>
+            <input type="range" class="form-range" id="brightness" name="brightness"
+                min="0" max="100" v-model.number="brightness">
+          </div>
         </div>
-        <div class="col">
-          <label for="brightness">Brightness</label>
-          <input type="range" class="form-range" id="brightness" name="brightness"
-              min="0" max="100" v-model.number="brightness">
-        </div>
-      </div>
-      <div class="one-shot-triggers">
+      </span>
+      <div class="one-shot-triggers" v-if="pieceConfig.allControls || pieceConfig.type === 'king'">
         <h3 class="triggerables-title">Tap to Run Special Effects</h3>
         <button type="button" class="btn btn-outline-primary" ontouchstart="" v-on:click="runOneShotTriggerable('fire')">🔥</button>
         <button type="button" class="btn btn-outline-primary" ontouchstart="" v-on:click="runOneShotTriggerable('candy-chaos')">🍭</button>
@@ -67,7 +70,7 @@ let makeSettingUpdateFunction = function(key) {
 
 export default {
   name: 'PieceControlPanel',
-  props: ['installationId', 'pieceId', 'sessionExpiryDate'],
+  props: ['installationId', 'pieceId', 'pieceConfig', 'sessionExpiryDate'],
   data() {
     return {
       saturation: 50,

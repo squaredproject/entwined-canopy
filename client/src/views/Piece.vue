@@ -1,7 +1,7 @@
 <template>
   <div class="piece">
     <PieceErrorScreen :errorKey="errorKey" v-if="errorKey"/>
-    <PieceControlPanel :installationId="installationId" :pieceId="pieceId" :sessionExpiryDate="sessionExpiryDate" v-else-if="state === 'active'"/>
+    <PieceControlPanel :installationId="installationId" :pieceId="pieceId" :pieceConfig="pieceConfig" :sessionExpiryDate="sessionExpiryDate" v-else-if="state === 'active'"/>
     <PieceWaitingScreen :estimatedWaitTime="estimatedWaitTime" v-else-if="state === 'waiting'"/>
     <PieceOfferScreen :installationId="installationId" :pieceId="pieceId" :offerExpiryDate="offerExpiryDate" v-else-if="state === 'offered'"/>
     <p v-else-if="state === 'loading'">Loading piece interactivity...</p>
@@ -71,6 +71,11 @@ export default {
       }
 
       return null;
+    },
+    pieceConfig: function() {
+      if (this.pieceId == null || this.pieceId == undefined) return null;
+
+      return installations[this.installationId || 'shrubs'].pieces.find((pieceConfig) => { return String(pieceConfig.id) === String(this.pieceId); });
     }
   },
   watch: {

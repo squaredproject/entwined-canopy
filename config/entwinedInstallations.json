@@ -144,104 +144,64 @@
 		"pieces": [
 			{
 					"id": 0,
-					"ry" : 70,
-					"x" : -290.64,
-					"z" : 441.77
+					"allControls": true
 			}, {
 					"id": 1,
-					"ry" : 100,
-					"x" : -587.09,
-					"z" : 145.32
+					"allControls": true
 			},{
 					"id": 2,
-					"ry" : 90,
-					"x" : -227.06,
-					"z" : 145.3
+					"allControls": true
 			},{
 					"id": 3,
-					"ry" : 150,
-					"x" : -595.8,
-					"z" : -154.4
+					"allControls": true
 			},{
 					"id": 4,
-					"ry" : 180,
-					"x" : -299.7,
-					"z" : -236.1
+					"allControls": true
 			},{
 					"id": 5,
-					"ry" : -110,
-					"x" : 86.3,
-					"z" : -540.4
+					"allControls": true
 			},{
 					"id": 6,
-					"ry" : -90,
-					"x" : 218,
-					"z" : -258.8
+					"allControls": true
 			},{
 					"id": 7,
-					"ry" : -60,
-					"x" : 585.8,
-					"z" : -172.6
+					"allControls": true
 			},{
 					"id": 8,
-					"ry" : -90,
-					"x" : 694.8,
-					"z" : -472.3
+					"allControls": true
 			},{
 					"id": 9,
-					"ry" : 180,
-					"x" : -467.7,
-					"z" : -776.6
+					"allControls": true
 			},{
 					"id": 10,
-					"ry" : 200,
-					"x" : -376.9,
-					"z" : -1089.9
+					"allControls": true
 			},{
 					"id": 11,
-					"ry" : -120,
-					"x" : 36.3,
-					"z" : -917.3
+					"allControls": true
 			},{
 					"id": 12,
-					"ry" : -90,
-					"x" : 190.7,
-					"z" : -1126.2
+					"allControls": true
 			},{
 					"id": 13,
-					"ry" : -120,
-					"x" : 95.4,
-					"z" : -1362.4
+					"allControls": true
 			},{
 					"id": 14,
-					"ry" : -20,
-					"x" : 971.8,
-					"z" : 54.5
+					"allControls": true
 			},{
 					"id": 15,
-					"ry" : -20,
-					"x" : 590.4,
-					"z" : 354.2
+					"allControls": true
 			},{
 					"id": 16,
-					"ry" : 0,
-					"x" : 472.3,
-					"z" : 590.4
+					"allControls": true
 			},{
 					"id": 17,
-					"ry" : -20,
-					"x" : 944.6,
-					"z" : 617.6
+					"allControls": true
 			},{
 					"id": 18,
-					"ry" : -30,
-					"x" : 1121.7,
-					"z" : 332.4
+					"allControls": true
 			},{
 					"id": 19,
-					"ry" : -30,
-					"x" : 1389.6,
-					"z" : 354.2
+					"allControls": true
 			}]
 	},
 	"950arnold": {
@@ -262,7 +222,8 @@
 		"pieces": [
 			{
 					"id": "yard",
-					"type" : "classic"
+					"type" : "classic",
+					"allControls": true
 			}
 		]
 	},
@@ -270,22 +231,27 @@
 		"pieces": [
 			{
 				"id": "front",
-				"type" : "classic"
+				"type" : "classic",
+				"allControls": true
 			},
 			{
 				"id": "middle",
-				"type" : "classic"
+				"type" : "classic",
+				"allControls": true
 			},
 			{
 				"id": "rear",
-				"type" : "classic"
+				"type" : "classic",
+				"allControls": true
 			}
 		]
 	},
 	"marin-home": {
 		"pieces": [
 			{
-				"id": "shrub"
+				"id": "shrub",
+				"type": "classic",
+				"allControls": true
 			}
 		]
 	}
