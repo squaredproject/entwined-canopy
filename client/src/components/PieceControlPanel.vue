@@ -30,8 +30,11 @@
         </div>
       </div>
       <div class="one-shot-triggers">
-        <h3 class="triggerables-title">Tap to Run Special Pattern</h3>
+        <h3 class="triggerables-title">Tap to Run Special Effects</h3>
         <button type="button" class="btn btn-outline-primary" ontouchstart="" v-on:click="runOneShotTriggerable('fire')">🔥</button>
+        <button type="button" class="btn btn-outline-primary" ontouchstart="" v-on:click="runOneShotTriggerable('candy-chaos')">🍭</button>
+        <button type="button" class="btn btn-outline-primary" ontouchstart="" v-on:click="runOneShotTriggerable('white')">🏳</button>
+        <button type="button" class="btn btn-outline-primary" ontouchstart="" v-on:click="runOneShotTriggerable('rainbow')">🌈</button>
       </div>
     </span>
     <div>
