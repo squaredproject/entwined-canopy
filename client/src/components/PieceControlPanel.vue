@@ -339,7 +339,7 @@ export default {
   margin: 50px auto;
 }
 .one-shot-triggers button {
-  font-size: 1.3rem;
+  font-size: 2.2rem;
   margin: 4px;
 }
 .one-shot-triggers button:hover {
