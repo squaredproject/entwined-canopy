@@ -207,7 +207,7 @@ export default {
 
       // if it's too bright for them to see anything on the piece, shut them out
       // no need to even load the rest of the page and connect a session in this case
-      if (tooBrightHours && dateHours >= tooBrightHours.start && dateHours <= tooBrightHours.end) {
+      if (tooBrightHours && dateHours >= tooBrightHours.start && dateHours < tooBrightHours.end) {
         next('/error/tooBright');
         return;
       }
