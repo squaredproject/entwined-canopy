@@ -204,6 +204,14 @@
 					"allControls": true
 			}]
 	},
+	"valencia": {
+		"pieces": [{
+			"type": "fairy-circle",
+			"id" : "circle-1",
+			"cubeSizeIndex" : 0
+		}],
+		"allControls": true
+	},
 	"950arnold": {
 		"nightlyDowntime": {
 			"start": {
