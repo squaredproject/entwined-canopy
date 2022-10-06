@@ -262,5 +262,34 @@
 				"allControls": true
 			}
 		]
+	},
+	"blink2022": {
+		"pieces": [
+			{
+				"id": "shrub-1",
+				"type" : "classic",
+				"allControls": true
+			},
+			{
+				"id": "shrub-2",
+				"type" : "classic",
+				"allControls": true
+			},
+			{
+				"id": "shrub-3",
+				"type" : "classic",
+				"allControls": true
+			},
+			{
+				"id": "sapling",
+				"type" : "sapling",
+				"allControls": true
+			},
+			{
+				"id": "fairy",
+				"type" : "fairy-circle",
+				"allControls": true
+			}
+		]
 	}
 }
