@@ -7,78 +7,103 @@
 		"pieces": [
 			{
 				"type" : "classic",
-				"cubeSizeIndex": 1,
-				"id" : "shrub-11"
+				"id" : "shrub-1"
 			},
 			{
 				"type" : "classic",
-				"cubeSizeIndex": 0,
-				"id" : "shrub-12"
+				"id" : "shrub-2"
 			},
 			{
 				"type" : "classic",
-				"cubeSizeIndex": 0,
-				"id" : "shrub-13"
+				"id" : "shrub-3"
 			},
 			{
 				"type" : "classic",
-				"cubeSizeIndex": 1,
-				"id" : "shrub-21"
+				"id" : "shrub-4"
 			},
 			{
 				"type" : "classic",
-				"cubeSizeIndex": 0,
-				"id" : "shrub-22"
+				"id" : "shrub-5"
 			},
 			{
 				"type" : "classic",
-				"cubeSizeIndex": 0,
-				"id" : "shrub-23"
+				"id" : "shrub-6"
 			},
 			{
 				"type" : "classic",
-				"cubeSizeIndex": 1,
-				"id" : "shrub-31"
+				"id" : "shrub-7"
 			},
 			{
 				"type" : "classic",
-				"cubeSizeIndex": 0,
-				"id" : "shrub-32"
+				"id" : "shrub-8"
 			},
 			{
 				"type" : "classic",
-				"cubeSizeIndex": 0,
-				"id" : "shrub-33"
+				"id" : "shrub-9"
 			},
 			{
 				"type" : "king",
-				"cubeSizeIndex": 0,
 				"id" : "king-1"
 			},
 			{
 				"type" : "king",
-				"cubeSizeIndex": 0,
 				"id" : "king-2"
 			},
 			{
 				"type" : "king",
-				"cubeSizeIndex": 0,
 				"id" : "king-3"
 			},
 			{
 				"type": "fairy-circle",
-				"id" : "circle-1",
-				"cubeSizeIndex" : 0
+				"id" : "baby-1"
 			},
 			{
 				"type": "fairy-circle",
-				"id" : "circle-2",
-				"cubeSizeIndex" : 0
+				"id" : "baby-2"
 			},
 			{
 				"type": "fairy-circle",
-				"cubeSizeIndex" : 0,
-				"id" : "circle-3"
+				"id" : "baby-3"
+			},
+			{
+				"type": "fairy-circle",
+				"id" : "baby-4"
+			},
+			{
+				"type": "fairy-circle",
+				"id" : "baby-5"
+			},
+			{
+				"type": "fairy-circle",
+				"id" : "baby-6"
+			},
+			{
+				"type": "fairy-circle",
+				"id" : "baby-7"
+			},
+			{
+				"type": "fairy-circle",
+				"id" : "baby-8"
+			},
+			{
+				"type": "fairy-circle",
+				"id" : "baby-9"
+			},
+			{
+				"type": "fairy-circle",
+				"id" : "baby-10"
+			},
+			{
+				"type": "fairy-circle",
+				"id" : "baby-11"
+			},
+			{
+				"type": "fairy-circle",
+				"id" : "baby-12"
+			},
+			{
+				"type": "fairy-circle",
+				"id" : "baby-13"
 			},
 			{
 				"type": "tree",
@@ -89,36 +114,40 @@
 				"id": "tree-small"
 			},
 			{
-				"type": "sapling",
-				"id" : "sapling-01"
+				"type": "log",
+				"id": "fallen-log"
 			},
 			{
 				"type": "sapling",
-				"id" : "sapling-02"
+				"id" : "sapling-1"
 			},
 			{
 				"type": "sapling",
-				"id" : "sapling-03"
+				"id" : "sapling-2"
 			},
 			{
 				"type": "sapling",
-				"id" : "sapling-04"
+				"id" : "sapling-3"
 			},
 			{
 				"type": "sapling",
-				"id" : "sapling-05"
+				"id" : "sapling-4"
 			},
 			{
 				"type": "sapling",
-				"id" : "sapling-06"
+				"id" : "sapling-5"
 			},
 			{
 				"type": "sapling",
-				"id" : "sapling-07"
+				"id" : "sapling-6"
 			},
 			{
 				"type": "sapling",
-				"id" : "sapling-08"
+				"id" : "sapling-7"
+			},
+			{
+				"type": "sapling",
+				"id" : "sapling-8"
 			},
 			{
 				"type": "sapling",
@@ -259,35 +288,6 @@
 			{
 				"id": "shrub",
 				"type": "classic",
-				"allControls": true
-			}
-		]
-	},
-	"blink2022": {
-		"pieces": [
-			{
-				"id": "shrub-1",
-				"type" : "classic",
-				"allControls": true
-			},
-			{
-				"id": "shrub-2",
-				"type" : "classic",
-				"allControls": true
-			},
-			{
-				"id": "shrub-3",
-				"type" : "classic",
-				"allControls": true
-			},
-			{
-				"id": "sapling",
-				"type" : "sapling",
-				"allControls": true
-			},
-			{
-				"id": "fairy",
-				"type" : "fairy-circle",
 				"allControls": true
 			}
 		]
