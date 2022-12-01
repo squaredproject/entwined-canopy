@@ -9,6 +9,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "yarn --cwd .. update-config && vue-cli-service build",
+    "build-nolint": "yarn --cwd .. update-config && vue-cli-service build --skip-plugins @vue/cli-plugin-eslint",
     "lint": "vue-cli-service lint",
     "deploy": "yarn build && git push -f origin main:prod-client"
   },
