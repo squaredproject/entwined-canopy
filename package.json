@@ -21,6 +21,16 @@
     "concurrently": "^5.3.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@babel/eslint-parser": "^7.19.1",
+    "@vue/cli-plugin-babel": "^5.0.8",
+    "@vue/cli-plugin-eslint": "^5.0.8",
+    "@vue/cli-plugin-router": "^5.0.8",
+    "@vue/cli-service": "^5.0.8",
+    "eslint": "^8.28.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-vue": "^9.8.0",
+    "vue-template-compiler": "^2.6.11",
     "md5": "^2.3.0"
   }
 }

@@ -310,7 +310,7 @@ export default {
   height: 75px;
   border-radius: 50px;
   border: 2px solid #000;
-  background: url(/images/mic-icon.png) no-repeat scroll 0 0 #eff0ff;
+  background: url(/public/images/mic-icon.png) no-repeat scroll 0 0 #eff0ff;
   background-size: 70%;
   padding: 20px;
   background-position: center center;
