@@ -1,8 +1,14 @@
 {
 	"ggp": {
-		"tooBrightHours": {
-			"start": 8,
-			"end": 16
+		"nightlyDowntime": {
+			"start": {
+				"hours": 22,
+				"minutes": 0
+			},
+			"end": {
+				"hours": 9,
+				"minutes": 0
+			}
 		},
 		"pieces": [
 			{
