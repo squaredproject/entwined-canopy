@@ -297,5 +297,163 @@
 				"allControls": true
 			}
 		]
+	},
+	"transfix": {
+		"pieces": [
+			{
+				"type" : "classic",
+				"id" : "shrub-1",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "shrub-2",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "shrub-3",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "shrub-4",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "shrub-5",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "shrub-6",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "shrub-7",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "shrub-8",
+				"allControls": true
+			},
+			{
+				"type": "sapling",
+				"id" : "sapling-1",
+				"allControls": true
+			},
+			{
+				"type": "sapling",
+				"id" : "sapling-2",
+				"allControls": true
+			}
+		]
+	},
+	"travel": {
+		"pieces": [
+			{
+				"type" : "classic",
+				"id" : "piece-1",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "piece-2",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "piece-3",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "piece-4",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "piece-5",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "piece-6",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "piece-7",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "piece-8",
+				"allControls": true
+			},
+			{
+				"type": "classic",
+				"id" : "piece-9",
+				"allControls": true
+			},
+			{
+				"type": "classic",
+				"id" : "piece-10",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "piece-11",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "piece-12",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "piece-13",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "piece-14",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "piece-15",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "piece-16",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "piece-17",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "piece-18",
+				"allControls": true
+			},
+			{
+				"type": "classic",
+				"id" : "piece-19",
+				"allControls": true
+			},
+			{
+				"type": "classic",
+				"id" : "piece-20",
+				"allControls": true
+			}
+		]
 	}
 }
