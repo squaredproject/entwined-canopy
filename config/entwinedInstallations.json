@@ -13,11 +13,13 @@
 		"pieces": [
 			{
 				"type" : "classic",
-				"id" : "shrub-1"
+				"id" : "shrub-1",
+				"allControls": true
 			},
 			{
 				"type" : "classic",
-				"id" : "shrub-2"
+				"id" : "shrub-2",
+				"allControls": true
 			},
 			{
 				"type" : "classic",
@@ -25,7 +27,8 @@
 			},
 			{
 				"type" : "classic",
-				"id" : "shrub-4"
+				"id" : "shrub-4",
+				"allControls": true
 			},
 			{
 				"type" : "classic",
@@ -33,7 +36,8 @@
 			},
 			{
 				"type" : "classic",
-				"id" : "shrub-6"
+				"id" : "shrub-6",
+				"allControls": true
 			},
 			{
 				"type" : "classic",
@@ -41,7 +45,8 @@
 			},
 			{
 				"type" : "classic",
-				"id" : "shrub-8"
+				"id" : "shrub-8",
+				"allControls": true
 			},
 			{
 				"type" : "classic",
