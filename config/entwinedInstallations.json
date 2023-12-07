@@ -13,44 +13,11 @@
 		"pieces": [
 			{
 				"type" : "classic",
-				"id" : "shrub-1",
-				"allControls": true
+				"id" : "shrub-1"
 			},
 			{
 				"type" : "classic",
-				"id" : "shrub-2",
-				"allControls": true
-			},
-			{
-				"type" : "classic",
-				"id" : "shrub-3"
-			},
-			{
-				"type" : "classic",
-				"id" : "shrub-4",
-				"allControls": true
-			},
-			{
-				"type" : "classic",
-				"id" : "shrub-5"
-			},
-			{
-				"type" : "classic",
-				"id" : "shrub-6",
-				"allControls": true
-			},
-			{
-				"type" : "classic",
-				"id" : "shrub-7"
-			},
-			{
-				"type" : "classic",
-				"id" : "shrub-8",
-				"allControls": true
-			},
-			{
-				"type" : "classic",
-				"id" : "shrub-9"
+				"id" : "shrub-2"
 			},
 			{
 				"type" : "king",
@@ -59,10 +26,6 @@
 			{
 				"type" : "king",
 				"id" : "king-2"
-			},
-			{
-				"type" : "king",
-				"id" : "king-3"
 			},
 			{
 				"type": "fairy-circle",
@@ -117,52 +80,14 @@
 				"id" : "baby-13"
 			},
 			{
-				"type": "tree",
-				"id": "tree-medium"
-			},
-			{
-				"type": "tree",
-				"id": "tree-small"
-			},
-			{
-				"type": "log",
-				"id": "fallen-log"
+				"type": "sapling",
+				"id" : "sapling-1",
+				"allControls": true
 			},
 			{
 				"type": "sapling",
-				"id" : "sapling-1"
-			},
-			{
-				"type": "sapling",
-				"id" : "sapling-2"
-			},
-			{
-				"type": "sapling",
-				"id" : "sapling-3"
-			},
-			{
-				"type": "sapling",
-				"id" : "sapling-4"
-			},
-			{
-				"type": "sapling",
-				"id" : "sapling-5"
-			},
-			{
-				"type": "sapling",
-				"id" : "sapling-6"
-			},
-			{
-				"type": "sapling",
-				"id" : "sapling-7"
-			},
-			{
-				"type": "sapling",
-				"id" : "sapling-8"
-			},
-			{
-				"type": "sapling",
-				"id" : "sapling-9"
+				"id" : "sapling-2",
+				"allControls": true
 			}
 		]
 	},
@@ -244,14 +169,6 @@
 					"allControls": true
 			}]
 	},
-	"valencia": {
-		"pieces": [{
-			"type": "fairy-circle",
-			"id" : "circle-1",
-			"cubeSizeIndex" : 0
-		}],
-		"allControls": true
-	},
 	"950arnold": {
 		"nightlyDowntime": {
 			"start": {
@@ -299,60 +216,6 @@
 			{
 				"id": "shrub",
 				"type": "classic",
-				"allControls": true
-			}
-		]
-	},
-	"transfix": {
-		"pieces": [
-			{
-				"type" : "classic",
-				"id" : "shrub-1",
-				"allControls": true
-			},
-			{
-				"type" : "classic",
-				"id" : "shrub-2",
-				"allControls": true
-			},
-			{
-				"type" : "classic",
-				"id" : "shrub-3",
-				"allControls": true
-			},
-			{
-				"type" : "classic",
-				"id" : "shrub-4",
-				"allControls": true
-			},
-			{
-				"type" : "classic",
-				"id" : "shrub-5",
-				"allControls": true
-			},
-			{
-				"type" : "classic",
-				"id" : "shrub-6",
-				"allControls": true
-			},
-			{
-				"type" : "classic",
-				"id" : "shrub-7",
-				"allControls": true
-			},
-			{
-				"type" : "classic",
-				"id" : "shrub-8",
-				"allControls": true
-			},
-			{
-				"type": "sapling",
-				"id" : "sapling-1",
-				"allControls": true
-			},
-			{
-				"type": "sapling",
-				"id" : "sapling-2",
 				"allControls": true
 			}
 		]
