@@ -323,5 +323,59 @@
 				"allControls": true
 			}
 		]
+	},
+	"transfix": {
+		"pieces": [
+			{
+				"type" : "classic",
+				"id" : "shrub-1",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "shrub-2",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "shrub-3",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "shrub-4",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "shrub-5",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "shrub-6",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "shrub-7",
+				"allControls": true
+			},
+			{
+				"type" : "classic",
+				"id" : "shrub-8",
+				"allControls": true
+			},
+			{
+				"type": "sapling",
+				"id" : "sapling-1",
+				"allControls": true
+			},
+			{
+				"type": "sapling",
+				"id" : "sapling-2",
+				"allControls": true
+			}
+		]
 	}
 }
