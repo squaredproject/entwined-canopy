@@ -20,6 +20,10 @@
 				"id" : "shrub-2"
 			},
 			{
+				"type" : "classic",
+				"id" : "shrub-3"
+			},
+			{
 				"type" : "king",
 				"id" : "king-1"
 			},
