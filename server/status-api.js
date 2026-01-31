@@ -2,6 +2,7 @@ const express = require('express');
 const lxSockets = require('./sockets/lx-sockets');
 const config = require('./config/config')
 const installations = require('./config/entwinedInstallations');
+const { getPool } = require('./analytics/db');
 
 const getAPIListener = function() {
     const app = express();
@@ -42,6 +43,80 @@ const getAPIListener = function() {
             } else {
                 res.status(203).send(`LX is NOT connected for installation ${installationId}, but that is expected given nightly downtime`);
             }
+        }
+    });
+
+    // Analytics stats endpoints
+    app.get('/stats/:installationId', async function(req, res) {
+        const pool = getPool();
+        if (!pool) {
+            return res.status(503).json({ error: 'Analytics not configured' });
+        }
+
+        const installationId = req.params.installationId;
+        const month = req.query.month; // Format: YYYY-MM (optional)
+
+        try {
+            let dateFilter = '';
+            let params = [installationId];
+
+            if (month) {
+                dateFilter = `AND timestamp >= $2::date AND timestamp < ($2::date + interval '1 month')`;
+                params.push(month + '-01');
+            }
+
+            const result = await pool.query(`
+                SELECT
+                    COUNT(*) as total_events,
+                    COUNT(DISTINCT session_id) as unique_sessions,
+                    COUNT(*) FILTER (WHERE event_type = 'activate') as activations,
+                    COUNT(*) FILTER (WHERE event_type = 'color_change') as color_changes,
+                    COUNT(*) FILTER (WHERE event_type = 'trigger') as triggers,
+                    MIN(timestamp) as first_event,
+                    MAX(timestamp) as last_event
+                FROM analytics_events
+                WHERE installation_id = $1 ${dateFilter}
+            `, params);
+
+            res.json({
+                installation_id: installationId,
+                month: month || 'all-time',
+                ...result.rows[0]
+            });
+        } catch (err) {
+            console.error('Stats query error:', err);
+            res.status(500).json({ error: 'Query failed' });
+        }
+    });
+
+    app.get('/stats/:installationId/pieces', async function(req, res) {
+        const pool = getPool();
+        if (!pool) {
+            return res.status(503).json({ error: 'Analytics not configured' });
+        }
+
+        const installationId = req.params.installationId;
+
+        try {
+            const result = await pool.query(`
+                SELECT
+                    piece_id,
+                    COUNT(*) as total_events,
+                    COUNT(DISTINCT session_id) as unique_sessions,
+                    COUNT(*) FILTER (WHERE event_type = 'activate') as activations
+                FROM analytics_events
+                WHERE installation_id = $1 AND piece_id IS NOT NULL
+                GROUP BY piece_id
+                ORDER BY activations DESC
+            `, [installationId]);
+
+            res.json({
+                installation_id: installationId,
+                pieces: result.rows
+            });
+        } catch (err) {
+            console.error('Stats query error:', err);
+            res.status(500).json({ error: 'Query failed' });
         }
     });
 

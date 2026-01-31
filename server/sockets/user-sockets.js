@@ -1,6 +1,7 @@
 const _ = require('underscore');
 
 let getPieceByID = require('../Piece').getPieceByID;
+const { logEvent } = require('../analytics/logger');
 
 let lxSockets = require('./lx-sockets');
 let userIO;
@@ -18,6 +19,7 @@ const initialize = function(io) {
     // had trouble getting them working on the client-side with our Vue/Socket lib
     userIO.on('connection', (socket) => {
         console.log(`Session ${socket.sessionId} connected`);
+        logEvent('session_start', socket.sessionId, null, null);
 
         // send them the initial sculpture state so they know what's up
         // socket.emit('sculptureStateUpdated', sculptureState.serialize());
@@ -34,6 +36,7 @@ const initialize = function(io) {
 
         socket.on('disconnect', () => {
             console.log(`Session ${socket.sessionId} disconnected`);
+            logEvent('session_end', socket.sessionId, socket.installationId, socket.pieceId);
         });
 
         // piece session management
@@ -51,6 +54,7 @@ const initialize = function(io) {
             piece.recordActionForSession(socket.sessionId);
 
             console.log(`Activating session ${socket.sessionId} for piece ${pieceId}.`);
+            logEvent('activate', socket.sessionId, installationId, pieceId);
 
             piece.requestActivateSession(socket);
         });
@@ -69,6 +73,7 @@ const initialize = function(io) {
             piece.recordActionForSession(socket.sessionId);
 
             console.log(`Deactivating session ${socket.sessionId} for piece ${pieceId}.`);
+            logEvent('deactivate', socket.sessionId, installationId, pieceId);
 
             piece.deactivateSession(socket);
         });
@@ -130,6 +135,11 @@ const initialize = function(io) {
             piece.recordActionForSession(socket.sessionId);
 
             console.log(`Updating piece ${updateObj.pieceId} settings: ${JSON.stringify(_.omit(updateObj, 'pieceId', 'installationId'))} (session = ${socket.sessionId})`);
+            logEvent('color_change', socket.sessionId, updateObj.installationId, updateObj.pieceId, {
+                hueSet: updateObj.hueSet,
+                saturation: updateObj.saturation,
+                brightness: updateObj.brightness
+            });
 
             // Scottsdale installation needs this for backwards-compat since it's on an old LX version before this was renamed
             // TODO: remove after Scottsdale installation ends
@@ -157,6 +167,9 @@ const initialize = function(io) {
             piece.recordActionForSession(socket.sessionId);
 
             console.log(`Running one shot triggerable ${updateObj.triggerableName} on piece ${updateObj.pieceId} (session = ${socket.sessionId})`)
+            logEvent('trigger', socket.sessionId, updateObj.installationId, updateObj.pieceId, {
+                triggerableName: updateObj.triggerableName
+            });
             lxSockets.emit('runOneShotTriggerable', _.pick(updateObj, ['installationId', 'pieceId', 'triggerableName']), piece.installationId, piece.id);
         });
 
@@ -181,6 +194,7 @@ const initialize = function(io) {
             // TODO enforce min/max values for each setting
 
             console.log(`Resetting piece ${updateObj.pieceId} settings`);
+            logEvent('reset', socket.sessionId, updateObj.installationId, updateObj.pieceId);
 
             // this won't work on the Scottsdale installation since it's an old LX version
             if (piece.installationId !== 'shrubs') {

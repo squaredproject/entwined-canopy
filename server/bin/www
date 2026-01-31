@@ -8,6 +8,10 @@ var debug = require('debug')('entwined-canopy:server');
 var http = require('http');
 let socketAPI = require('../sockets/sockets');
 let statusAPI = require('../status-api')();
+const { initializeSchema } = require('../analytics/db');
+
+// Initialize analytics database (async, non-blocking)
+initializeSchema();
 
 /**
  * Get port from environment
