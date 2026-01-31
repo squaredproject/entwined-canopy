@@ -1,13 +1,17 @@
 const { Pool } = require('pg');
 
 let pool = null;
+let warned = false;
 
 function getPool() {
     if (!pool) {
         const connectionString = process.env.DATABASE_URL;
 
         if (!connectionString) {
-            console.warn('DATABASE_URL not set - analytics disabled');
+            if (!warned) {
+                console.warn('DATABASE_URL not set - analytics disabled');
+                warned = true;
+            }
             return null;
         }
 

@@ -1,5 +1,6 @@
 const installations = require('../config/entwinedInstallations');
-var lXIO;
+const { logEvent } = require('../analytics/logger');
+var lxIO;
 
 const initialize = function(io) {
     let userSockets = require('./user-sockets');
@@ -27,6 +28,9 @@ const initialize = function(io) {
             }
 
             socket.installationId = installationId;
+            logEvent('lx_connected', 'lx-server', installationId, null, {
+                ip: socket.request.connection.remoteAddress
+            });
             userSockets.notifyLXConnected(installationId);
 
             // for now, we ignore interactivityEnabled and breakTimerInfo, even though they're sent in the model
@@ -48,6 +52,9 @@ const initialize = function(io) {
 
         socket.on('disconnect', () => {
             console.log(`LX server disconnected for installation ${socket.installationId}! Client IP ${socket.request.connection.remoteAddress} ${lxIO.sockets.size} LX sockets currently open`);
+            logEvent('lx_disconnected', 'lx-server', socket.installationId || '', null, {
+                ip: socket.request.connection.remoteAddress
+            });
             if(socket.installationId && !lxIsConnected(socket.installationId)) {
                 userSockets.notifyLXDisconnected(socket.installationId);
             }

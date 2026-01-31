@@ -139,6 +139,11 @@ export default {
       this.state = 'active';
       this.sessionExpiryDate = new Date(data.expiryDate);
       console.log('Session activated for piece ' + this.pieceId);
+
+      this.$posthog.capture('session_activated', {
+        installation_id: this.installationId,
+        piece_id: this.pieceId
+      });
     },
     sessionDeactivated(data) {
       if (data.installationId !== this.installationId || data.pieceId !== this.pieceId) {
@@ -149,6 +154,11 @@ export default {
       this.state = 'loading';
       this.$router.push('/');
       console.log('Session deactivated for piece ' + this.pieceId);
+
+      this.$posthog.capture('session_deactivated', {
+        installation_id: this.installationId,
+        piece_id: this.pieceId
+      });
     },
     sessionWaiting(data) {
       if (data.installationId !== this.installationId || data.pieceId !== this.pieceId) {
@@ -193,6 +203,11 @@ export default {
   },
   mounted() {
     this.$socket.client.connect();
+
+    this.$posthog.capture('piece_viewed', {
+      installation_id: this.installationId,
+      piece_id: this.pieceId
+    });
   },
   beforeDestroy() {
     this.$socket.client.disconnect();

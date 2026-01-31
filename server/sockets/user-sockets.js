@@ -19,7 +19,10 @@ const initialize = function(io) {
     // had trouble getting them working on the client-side with our Vue/Socket lib
     userIO.on('connection', (socket) => {
         console.log(`Session ${socket.sessionId} connected`);
-        logEvent('session_start', socket.sessionId, null, null);
+        logEvent('session_start', socket.sessionId, null, null, {
+            ip: socket.request.connection.remoteAddress,
+            user_agent: socket.request.headers['user-agent']
+        });
 
         // send them the initial sculpture state so they know what's up
         // socket.emit('sculptureStateUpdated', sculptureState.serialize());

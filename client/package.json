@@ -14,8 +14,9 @@
     "deploy": "yarn build && git push -f origin main:prod-client"
   },
   "dependencies": {
+    "posthog-js": "^1.96.0",
     "md5": "^2.3.0",
-    "meyda": "^5.3.0",
+    "meyda": "^5.6.x",
     "socket.io-client": "^3.1.0",
     "uid": "^2.0.0",
     "underscore": "^1.12.0",
