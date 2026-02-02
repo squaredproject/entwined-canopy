@@ -17,24 +17,14 @@ if (!sessionId) {
 
 // Initialize PostHog
 const posthogKey = process.env.VUE_APP_POSTHOG_KEY || 'phc_Vlo5F0WYJmgCREUUna1TQQ1ZAieDDFyHZZ9lIXcVkMU';
-console.log('PostHog init with key:', posthogKey);
-try {
-  posthog.init(posthogKey, {
-    api_host: 'https://us.i.posthog.com',
-    capture_pageview: true,
-    persistence: 'localStorage',
-    loaded: (ph) => {
-      console.log('PostHog loaded successfully', ph);
-    }
-  });
-  // Identify user with our session ID for cross-reference with server logs
-  posthog.identify(sessionId);
-  console.log('PostHog identified user:', sessionId);
-  Vue.prototype.$posthog = posthog;
-} catch (e) {
-  console.error('PostHog init error:', e);
-  Vue.prototype.$posthog = { capture: () => {}, identify: () => {} };
-}
+posthog.init(posthogKey, {
+  api_host: 'https://us.i.posthog.com',
+  capture_pageview: true,
+  persistence: 'localStorage'
+});
+// Identify user with our session ID for cross-reference with server logs
+posthog.identify(sessionId);
+Vue.prototype.$posthog = posthog;
 
 let userIO = io(process.env.VUE_APP_SOCKET_API_URL, {
   autoConnect: false,
