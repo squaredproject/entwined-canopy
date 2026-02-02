@@ -1,4 +1,5 @@
 const installationConfigs = require('./config/entwinedInstallations');
+const { captureEvent } = require('./analytics/posthog');
 let installations = {};
 
 let lxSockets = require('./sockets/lx-sockets');
@@ -91,6 +92,10 @@ class Piece {
             if (!this.activeSession) {
                 console.log(`Piece ${this.id} (${this.installationId}): activated session ${sessionId}`);
                 this.activeSession = { id: sessionId, expiryDate: generateNewSessionExpiryDate() };
+                captureEvent('session_activated', sessionId, {
+                    installation_id: this.installationId,
+                    piece_id: this.id
+                });
             } else {
                 console.log(`Piece ${this.id} (${this.installationId}): reactivated session ${sessionId}`);
             }
@@ -135,6 +140,11 @@ class Piece {
 
         emitToSessionOnPiece('sessionDeactivated', null, sessionId, this.installationId, this.id);
         lxSockets.emit('interactionStopped', null, this.installationId, this.id);
+        captureEvent('session_deactivated', sessionId, {
+            installation_id: this.installationId,
+            piece_id: this.id,
+            reason: 'user_request'
+        });
 
         console.log(`Piece ${this.id} (${this.installationId}): deactivated session ${sessionId} by request`);
 
@@ -180,6 +190,10 @@ class Piece {
         this.activeSession = { id: sessionId, expiryDate: generateNewSessionExpiryDate() };
         emitToSessionOnPiece('sessionActivated', { expiryDate: this.activeSession.expiryDate }, sessionId, this.installationId, this.id);
         lxSockets.emit('interactionStarted', null, this.installationId, this.id);
+        captureEvent('session_activated', sessionId, {
+            installation_id: this.installationId,
+            piece_id: this.id
+        });
         this._sendUpdatedWaitTimes();
     }
 
@@ -208,6 +222,11 @@ class Piece {
                 console.log(`Piece ${this.id} (${this.installationId}): can't find socket for ${this.activeSession.id} to send expiry deactivation notice.`);
             }
             lxSockets.emit('interactionStopped', null, this.installationId, this.id);
+            captureEvent('session_deactivated', this.activeSession.id, {
+                installation_id: this.installationId,
+                piece_id: this.id,
+                reason: 'expired'
+            });
 
             delete this.activeSession;
 
@@ -255,8 +274,13 @@ class Piece {
             ) {
             console.log(`Piece ${this.id} (${this.installationId}): ending session for ${this.activeSession.id} because it was inactive for ${Math.round(msSinceLastAction / 1000)} seconds`);
             emitToSessionOnPiece('sessionDeactivated', null, this.activeSession.id, this.installationId, this.id);
-    
+
             lxSockets.emit('interactionStopped', null, this.installationId, this.id);
+            captureEvent('session_deactivated', this.activeSession.id, {
+                installation_id: this.installationId,
+                piece_id: this.id,
+                reason: 'inactivity'
+            });
             delete this.activeSession;
 
             // give it to the next in line!

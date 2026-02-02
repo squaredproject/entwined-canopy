@@ -9,9 +9,16 @@ var http = require('http');
 let socketAPI = require('../sockets/sockets');
 let statusAPI = require('../status-api')();
 const { initializeSchema } = require('../analytics/db');
+const { captureEvent } = require('../analytics/posthog');
 
 // Initialize analytics database (async, non-blocking)
 initializeSchema();
+
+// Track server restarts
+captureEvent('server_started', 'canopy-server', {
+    port: process.env.PORT || '3000',
+    node_version: process.version
+});
 
 /**
  * Get port from environment
