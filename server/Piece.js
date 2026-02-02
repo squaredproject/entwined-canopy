@@ -147,7 +147,7 @@ class Piece {
 
         // ya can't decline a session that's never been offered
         if (!this.offeredSession || this.offeredSession.id !== sessionId) {
-            console.log(`Piece ${this.id} can't decline offered session because session ${sessionId} hasn't been offered.`);
+            console.log(`Piece ${this.id} (${this.installationId}) can't decline offered session because session ${sessionId} hasn't been offered.`);
             return;
         }
 
@@ -157,7 +157,7 @@ class Piece {
         this._removeSessionFromWaitingQueue(sessionId);
         delete this.offeredSession;
 
-        console.log(`Piece ${this.id}: session ${sessionId} declined offer`);
+        console.log(`Piece ${this.id} (${this.installationId}): session ${sessionId} declined offer`);
 
         // give it to the next in line!
         this._offerNextSession();
@@ -167,7 +167,7 @@ class Piece {
         let sessionId = socket.sessionId;
 
         if (!this.offeredSession || this.offeredSession.id !== sessionId) {
-            console.log(`Piece ${this.id} did not offer session to ${sessionId}. Ignoring.`);
+            console.log(`Piece ${this.id} (${this.installationId}) did not offer session to ${sessionId}. Ignoring.`);
             return;
         }
 
@@ -175,7 +175,7 @@ class Piece {
         this._removeSessionFromWaitingQueue(sessionId);
         delete this.offeredSession;
 
-        console.log(`Piece ${this.id}: session ${sessionId} accepted offer`);
+        console.log(`Piece ${this.id} (${this.installationId}): session ${sessionId} accepted offer`);
 
         this.activeSession = { id: sessionId, expiryDate: generateNewSessionExpiryDate() };
         emitToSessionOnPiece('sessionActivated', { expiryDate: this.activeSession.expiryDate }, sessionId, this.installationId, this.id);
@@ -195,7 +195,7 @@ class Piece {
 
             // if nobody else is waiting in line, just extend the session!
             if (socketConnected && !this.waitingSessions.length) {
-                console.log(`Piece ${this.id}: extending session for ${this.activeSession.id} because no other users are waiting`);
+                console.log(`Piece ${this.id} (${this.installationId}): extending session for ${this.activeSession.id} because no other users are waiting`);
                 this.activeSession.expiryDate = generateNewSessionExpiryDate();
                 emitToSessionOnPiece('sessionActivated', { expiryDate: this.activeSession.expiryDate }, this.activeSession.id, this.installationId, this.id);
                 return;
@@ -203,9 +203,9 @@ class Piece {
 
             if (socketConnected) {
                 emitToSessionOnPiece('sessionDeactivated', null, this.activeSession.id, this.installationId, this.id);
-                console.log(`Piece ${this.id}: session ${this.activeSession.id} expired and deactivated`);
+                console.log(`Piece ${this.id} (${this.installationId}): session ${this.activeSession.id} expired and deactivated`);
             } else {
-                console.log(`Piece ${this.id}: can't find socket for ${this.activeSession.id} to send expiry deactivation notice.`);
+                console.log(`Piece ${this.id} (${this.installationId}): can't find socket for ${this.activeSession.id} to send expiry deactivation notice.`);
             }
             lxSockets.emit('interactionStopped', null, this.installationId, this.id);
 
@@ -218,7 +218,7 @@ class Piece {
 
             // if nobody else is waiting in line, just extend the offer!
             if (socketConnected && this.waitingSessions.length <= 1) {
-                console.log(`Piece ${this.id}: extending offer for ${this.offeredSession.id} because no other users are waiting`);
+                console.log(`Piece ${this.id} (${this.installationId}): extending offer for ${this.offeredSession.id} because no other users are waiting`);
                 this.offeredSession.expiryDate = generateNewOfferExpiryDate();
                 emitToSessionOnPiece('sessionOffered', {
                     offerExpiryDate: this.offeredSession.expiryDate
@@ -228,9 +228,9 @@ class Piece {
 
             if (socketConnected) {
                 emitToSessionOnPiece('sessionOfferRevoked', null, this.offeredSession.id, this.installationId, this.id);
-                console.log(`Piece ${this.id}: offer for session ${this.offeredSession.id} expired and revoked`);
+                console.log(`Piece ${this.id} (${this.installationId}): offer for session ${this.offeredSession.id} expired and revoked`);
             } else {
-                console.log(`Piece ${this.id}: can't find socket for ${this.offeredSession.id} to send offer expiry revocation notice.`);
+                console.log(`Piece ${this.id} (${this.installationId}): can't find socket for ${this.offeredSession.id} to send offer expiry revocation notice.`);
             }
 
             // move their session to the back of the queue and keep going
@@ -253,7 +253,7 @@ class Piece {
         if (msSinceLastAction > (INACTIVITY_DEACTIVATE_THRESHOLD * 1000) ||
             (msSinceLastAction > (DISCONNECTION_DEACTIVATE_THRESHOLD * 1000) && !socketConnectedForSessionOnPiece(this.activeSession.id, this.installationId, this.id))
             ) {
-            console.log(`Piece ${this.id}: ending session for ${this.activeSession.id} because it was inactive for ${Math.round(msSinceLastAction / 1000)} seconds`);
+            console.log(`Piece ${this.id} (${this.installationId}): ending session for ${this.activeSession.id} because it was inactive for ${Math.round(msSinceLastAction / 1000)} seconds`);
             emitToSessionOnPiece('sessionDeactivated', null, this.activeSession.id, this.installationId, this.id);
     
             lxSockets.emit('interactionStopped', null, this.installationId, this.id);
@@ -263,7 +263,7 @@ class Piece {
             this._offerNextSession();
         } else if (msSinceLastAction > (INACTIVITY_WARN_THRESHOLD * 1000)) {
             // otherwise, if they're past the warning threshold, let them know to do something
-            console.log(`Piece ${this.id}: sent inactivity warning to session ${this.activeSession.id} because it was inactive for ${Math.round(msSinceLastAction / 1000)} seconds`);
+            console.log(`Piece ${this.id} (${this.installationId}): sent inactivity warning to session ${this.activeSession.id} because it was inactive for ${Math.round(msSinceLastAction / 1000)} seconds`);
             let deadlineTimestamp = lastAction + (INACTIVITY_DEACTIVATE_THRESHOLD * 1000);
             emitToSessionOnPiece('inactivityWarning', { deadline: deadlineTimestamp }, this.activeSession.id, this.installationId, this.id);
         }
@@ -282,10 +282,10 @@ class Piece {
     }
 
     _offerNextSession() {
-        console.log(`Piece ${this.id}: offering next session...`);
+        console.log(`Piece ${this.id} (${this.installationId}): offering next session...`);
         // if the queue's empty, we're done! nobody else is waiting.
         if (!this.waitingSessions.length) {
-            console.log(`Piece ${this.id}: no waiting sessions to offer to`);
+            console.log(`Piece ${this.id} (${this.installationId}): no waiting sessions to offer to`);
             return;
         }
 
@@ -297,7 +297,7 @@ class Piece {
             socketConnected = socketConnectedForSessionOnPiece(nextSessionUp, this.installationId, this.id)
 
             if (!socketConnected) {
-                console.log(`Piece ${this.id}: can't find socket for ${nextSessionUp} to offer the next active session, removing from waiting queue.`);
+                console.log(`Piece ${this.id} (${this.installationId}): can't find socket for ${nextSessionUp} to offer the next active session, removing from waiting queue.`);
 
                 this._removeSessionFromWaitingQueue(nextSessionUp);
             }
@@ -305,12 +305,12 @@ class Piece {
 
         // we couldn't get anyone willing to play with us for now (i.e. no live connections int he queue)
         if (!socketConnected) {
-            console.log(`Piece ${this.id}: no valid socket to offer to`);
+            console.log(`Piece ${this.id} (${this.installationId}): no valid socket to offer to`);
             return;
         }
 
         this.offeredSession = { id: nextSessionUp, expiryDate: generateNewOfferExpiryDate() };
-        console.log(`Piece ${this.id}: offering session to ${this.offeredSession.id}`);
+        console.log(`Piece ${this.id} (${this.installationId}): offering session to ${this.offeredSession.id}`);
         emitToSessionOnPiece('sessionOffered', {
             offerExpiryDate: this.offeredSession.expiryDate
         }, this.offeredSession.id, this.installationId, this.id);
