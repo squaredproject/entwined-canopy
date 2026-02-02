@@ -7,5 +7,5 @@
 command = "yarn build-nolint"
 
 [build.environment]
-YARN_FLAGS = "--production=false"
+YARN_FLAGS = "--production=false --ignore-engines"
 NODE_VERSION = "20"
