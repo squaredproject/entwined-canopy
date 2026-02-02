@@ -8,3 +8,4 @@ command = "yarn build-nolint"
 
 [build.environment]
 YARN_FLAGS = "--production=false"
+NODE_VERSION = "20"
