@@ -89,10 +89,10 @@ class Piece {
             delete this.offeredSession;
             // only regenerate the expiry date if they're not already active
             if (!this.activeSession) {
-                console.log(`Piece ${this.id}: activated session ${sessionId}`);
+                console.log(`Piece ${this.id} (${this.installationId}): activated session ${sessionId}`);
                 this.activeSession = { id: sessionId, expiryDate: generateNewSessionExpiryDate() };
             } else {
-                console.log(`Piece ${this.id}: reactivated session ${sessionId}`);
+                console.log(`Piece ${this.id} (${this.installationId}): reactivated session ${sessionId}`);
             }
             emitToSessionOnPiece('sessionActivated', { expiryDate: this.activeSession.expiryDate }, sessionId, this.installationId, this.id);
             lxSockets.emit('interactionStarted', null, this.installationId, this.id);
@@ -106,16 +106,16 @@ class Piece {
             emitToSessionOnPiece('sessionOffered', {
                 offerExpiryDate: this.offeredSession.expiryDate
             }, sessionId, this.id);
-            console.log(`Piece ${this.id}: reoffered session ${sessionId}`);
+            console.log(`Piece ${this.id} (${this.installationId}): reoffered session ${sessionId}`);
             return;
         }
 
         // no duplicates in the queue!
         if (!this.waitingSessions.includes(sessionId)) {
-            console.log(`Piece ${this.id}: placed session ${sessionId} in waiting queue`);
+            console.log(`Piece ${this.id} (${this.installationId}): placed session ${sessionId} in waiting queue`);
             this.waitingSessions.push(sessionId);
         } else {
-            console.log(`Piece ${this.id}: reminded session ${sessionId} of spot in waiting queue`);
+            console.log(`Piece ${this.id} (${this.installationId}): reminded session ${sessionId} of spot in waiting queue`);
         }
 
         let waitTime = this._estimatedWaitTime(sessionId);
@@ -127,7 +127,7 @@ class Piece {
 
         // ya can't deactivate a session that's not activated
         if (!this.activeSession || this.activeSession.id !== sessionId) {
-            console.log(`Piece ${this.id} can't deactivate session ${sessionId} because it isn't currently active.`);
+            console.log(`Piece ${this.id} (${this.installationId}) can't deactivate session ${sessionId} because it isn't currently active.`);
             return;
         }
 
@@ -136,7 +136,7 @@ class Piece {
         emitToSessionOnPiece('sessionDeactivated', null, sessionId, this.installationId, this.id);
         lxSockets.emit('interactionStopped', null, this.installationId, this.id);
 
-        console.log(`Piece ${this.id}: deactivated session ${sessionId} by request`);
+        console.log(`Piece ${this.id} (${this.installationId}): deactivated session ${sessionId} by request`);
 
         // give it to the next in line!
         this._offerNextSession();
